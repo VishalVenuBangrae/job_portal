@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Email</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f4; }
+    .container { max-width: 400px; margin: auto; background: #fff; padding: 2em; border-radius: 8px; box-shadow: 0 2px 8px #ccc; }
+    h1 { text-align: center; }
+    form { margin-top: 2em; }
+    label { display: block; margin-top: 1em; }
+    input { width: 100%; padding: 0.5em; margin-top: 0.2em; }
+    button { margin-top: 1em; padding: 0.7em 2em; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    .error { color: red; margin-top: 1em; }
+    .success { color: green; margin-top: 1em; }
+    .resend { margin-top: 1em; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Verify Your Email</h1>
+    <form id="verifyForm">
+      <label>Email: <input type="email" name="email" required></label>
+      <label>Verification Code: <input type="text" name="code" required></label>
+      <button type="submit">Verify Email</button>
+      <div class="error" id="verifyError"></div>
+      <div class="success" id="verifySuccess"></div>
+    </form>
+    <div class="resend">
+      <button id="resendBtn">Resend Verification Email</button>
+      <div class="success" id="resendSuccess"></div>
+    </div>
+    <p style="text-align:center;">Back to <a href="/login.html">Login</a></p>
+  </div>
+  <script src="/verify-email.js"></script>
+</body>
+</html> 

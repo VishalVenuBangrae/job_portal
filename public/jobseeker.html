@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jobseeker Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f4; }
+    .container { max-width: 600px; margin: auto; background: #fff; padding: 2em; border-radius: 8px; box-shadow: 0 2px 8px #ccc; }
+    h1 { text-align: center; }
+    .jobs, .applied { margin-top: 2em; }
+    .job, .applied-job { background: #f9f9f9; padding: 1em; border-radius: 4px; margin-bottom: 1em; }
+    a { display: block; margin-top: 2em; text-align: center; color: #007bff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Jobseeker Dashboard</h1>
+    <div class="jobs">
+      <h2>Available Jobs</h2>
+      <div class="job">
+        <strong>Deckhand</strong> at Yacht Co, Monaco<br>
+        <small>Full-time | 3000 EUR/month</small>
+        <p>Looking for experienced deckhand.</p>
+        <button>Apply</button>
+      </div>
+      <!-- More jobs can be listed here dynamically -->
+    </div>
+    <div class="applied">
+      <h2>Applied Jobs</h2>
+      <div class="applied-job">
+        <strong>Deckhand</strong> at Yacht Co, Monaco<br>
+        <small>Application Status: Pending</small>
+      </div>
+      <!-- More applied jobs can be listed here dynamically -->
+    </div>
+    <form id="changePasswordForm" style="margin-top:2em;">
+      <h2>Change Password</h2>
+      <label>Current Password: <input type="password" name="currentPassword" required></label>
+      <label>New Password: <input type="password" name="newPassword" required></label>
+      <button type="submit">Change Password</button>
+      <div class="error" id="changePassError"></div>
+      <div class="success" id="changePassSuccess"></div>
+    </form>
+    <button id="logoutBtn" style="margin-top:2em;">Logout</button>
+    <a href="/index.html">Back to Home</a>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const token = localStorage.getItem('token');
+      const userType = localStorage.getItem('userType');
+      if (!token) {
+        window.location.href = '/login.html';
+      } else if (userType !== 'jobseeker') {
+        window.location.href = '/employer.html';
+      }
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.onclick = function() {
+          localStorage.removeItem('token');
+          localStorage.removeItem('userType');
+          window.location.href = '/login.html';
+        };
+      }
+      // Change password form
+      const changePasswordForm = document.getElementById('changePasswordForm');
+      if (changePasswordForm) {
+        changePasswordForm.onsubmit = async function(e) {
+          e.preventDefault();
+          const currentPassword = this.currentPassword.value;
+          const newPassword = this.newPassword.value;
+          const errorDiv = document.getElementById('changePassError');
+          const successDiv = document.getElementById('changePassSuccess');
+          errorDiv.textContent = '';
+          successDiv.textContent = '';
+          try {
+            const res = await fetch('/api/v1/auth/change-password', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+              },
+              body: JSON.stringify({ currentPassword, newPassword })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+              errorDiv.textContent = data.message || 'Failed to change password';
+              return;
+            }
+            successDiv.textContent = 'Password changed successfully!';
+            changePasswordForm.reset();
+          } catch (err) {
+            errorDiv.textContent = 'Network error';
+          }
+        };
+      }
+    });
+  </script>
+  <script src="/jobseeker.js"></script>
+</body>
+</html> 

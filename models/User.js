@@ -24,6 +24,11 @@ const userSchema = new mongoose.Schema({
         enum: ['jobseeker', 'employer'],
         required: true
     },
+    phone: {
+        type: String,
+        required: [true, 'Please provide a phone number'],
+        trim: true
+    },
     // For job seekers
     profile: {
         phone: String,
@@ -36,6 +41,8 @@ const userSchema = new mongoose.Schema({
             contentType: String
         }
     },
+    resetEmailCode: String,
+    resetEmailCodeExpiry: Date,
     // For job seekers - track applied jobs
     appliedJobs: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -49,7 +56,12 @@ const userSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
-    }
+    },
+    emailVerified: {
+        type: Boolean,
+        default: false
+    },
+    emailVerificationCode: String
 }, {
     timestamps: true
 });

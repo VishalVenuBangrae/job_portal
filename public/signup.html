@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f4; }
+    .container { max-width: 400px; margin: auto; background: #fff; padding: 2em; border-radius: 8px; box-shadow: 0 2px 8px #ccc; }
+    h1 { text-align: center; }
+    form { margin-top: 2em; }
+    label { display: block; margin-top: 1em; }
+    input, select { width: 100%; padding: 0.5em; margin-top: 0.2em; }
+    button { margin-top: 1em; padding: 0.7em 2em; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    .hidden { display: none; }
+    .error { color: red; margin-top: 1em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Sign Up</h1>
+    <form id="signupForm" enctype="multipart/form-data">
+      <label>Name: <input type="text" name="name" required></label>
+      <label>Email: <input type="email" name="email" required></label>
+      <label>Password: <input type="password" name="password" required></label>
+      <label>User Type:
+        <select name="userType" id="userType" required>
+          <option value="jobseeker">Jobseeker</option>
+          <option value="employer">Employer</option>
+        </select>
+      </label>
+      <label>Phone Number: <input type="text" name="phone" required></label>
+      <div id="resumeField" class="hidden">
+        <label>Resume (PDF): <input type="file" name="resume" accept="application/pdf"></label>
+      </div>
+      <button type="submit">Sign Up</button>
+      <div class="error" id="signupError"></div>
+    </form>
+    <p style="text-align:center;">Already have an account? <a href="/login.html">Login</a></p>
+  </div>
+  <script src="/signup.js"></script>
+</body>
+</html> 

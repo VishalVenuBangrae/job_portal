@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Portal</title>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const token = localStorage.getItem('token');
+      const userType = localStorage.getItem('userType');
+      if (token && userType) {
+        if (userType === 'employer') {
+          window.location.href = '/employer.html';
+        } else {
+          window.location.href = '/jobseeker.html';
+        }
+      } else {
+        window.location.href = '/login.html';
+      }
+    });
+  </script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f4; }
+    .container { max-width: 500px; margin: auto; background: #fff; padding: 2em; border-radius: 8px; box-shadow: 0 2px 8px #ccc; }
+    h1 { text-align: center; }
+    a { display: block; margin: 1em 0; text-align: center; color: #007bff; text-decoration: none; font-size: 1.2em; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to Yacht Daywork Job Portal</h1>
+    <a href="/employer.html">Employer Dashboard</a>
+    <a href="/jobseeker.html">Jobseeker Dashboard</a>
+  </div>
+</body>
+</html> 
