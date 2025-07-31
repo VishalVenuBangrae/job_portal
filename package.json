@@ -6,7 +6,12 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "server": "nodemon server.js"
+    "server": "nodemon server.js",
+    "setup": "node setup-dev.js",
+    "security:audit": "npm audit",
+    "security:fix": "npm audit fix",
+    "security:check": "npm audit --audit-level=high",
+    "test:security": "npm run security:check && npm run security:audit"
   },
   "author": "Vishal Venu Bangrae",
   "license": "ISC",
@@ -16,6 +21,10 @@
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^4.21.2",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^8.0.1",
+    "helmet": "^8.1.0",
+    "hpp": "^0.2.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.10.1",
     "morgan": "^1.10.0",
@@ -23,6 +32,7 @@
     "nodemailer": "^6.10.1",
     "nodemon": "^3.1.9",
     "twilio": "^4.23.0",
-    "validator": "^13.12.0"
+    "validator": "^13.12.0",
+    "xss-clean": "^0.1.4"
   }
 }

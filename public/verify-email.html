@@ -3,37 +3,567 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verify Email</title>
+  <title>Verify Email - Yacht Crew Portal</title>
+  <link rel="stylesheet" href="/styles.css">
   <style>
-    body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f4; }
-    .container { max-width: 400px; margin: auto; background: #fff; padding: 2em; border-radius: 8px; box-shadow: 0 2px 8px #ccc; }
-    h1 { text-align: center; }
-    form { margin-top: 2em; }
-    label { display: block; margin-top: 1em; }
-    input { width: 100%; padding: 0.5em; margin-top: 0.2em; }
-    button { margin-top: 1em; padding: 0.7em 2em; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    .error { color: red; margin-top: 1em; }
-    .success { color: green; margin-top: 1em; }
-    .resend { margin-top: 1em; text-align: center; }
+    /* Verify Email Page Specific Styles */
+    .verify-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated Background */
+    .animated-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Floating Elements */
+    .floating-elements {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .floating-element {
+      position: absolute;
+      opacity: 0.1;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .floating-element:nth-child(1) {
+      top: 15%;
+      left: 15%;
+      font-size: 48px;
+      animation-delay: 0s;
+    }
+
+    .floating-element:nth-child(2) {
+      top: 70%;
+      right: 10%;
+      font-size: 36px;
+      animation-delay: 2s;
+    }
+
+    .floating-element:nth-child(3) {
+      bottom: 20%;
+      left: 25%;
+      font-size: 24px;
+      animation-delay: 4s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+
+    /* Verify Card */
+    .verify-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      max-width: 450px;
+      width: 90%;
+      position: relative;
+      z-index: 10;
+      transform: translateY(20px);
+      opacity: 0;
+      animation: slideUp 0.8s ease forwards;
+    }
+
+    @keyframes slideUp {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .verify-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .verify-logo {
+      font-size: 48px;
+      margin-bottom: 10px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .verify-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 5px;
+    }
+
+    .verify-subtitle {
+      color: var(--text-light);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 15px 20px;
+      border: 2px solid #e1e5e9;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .form-input:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      outline: none;
+    }
+
+    .form-input:focus + .input-icon {
+      color: #667eea;
+    }
+
+    .input-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+      transition: color 0.3s ease;
+    }
+
+    .btn-verify {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-verify:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-verify:active {
+      transform: translateY(0);
+    }
+
+    .btn-verify::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn-verify:hover::before {
+      left: 100%;
+    }
+
+    .btn-resend {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      color: #667eea;
+      border: 2px solid #667eea;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 15px;
+    }
+
+    .btn-resend:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .verify-links {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .verify-links a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .verify-links a:hover {
+      color: #764ba2;
+    }
+
+    /* Loading Animation */
+    .loading-spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Error Message */
+    .error-message {
+      background: #fee;
+      color: #c53030;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+      border-left: 4px solid #c53030;
+      display: none;
+    }
+
+    /* Success Message */
+    .success-message {
+      background: #f0fff4;
+      color: #38a169;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+      border-left: 4px solid #38a169;
+      display: none;
+    }
+
+    /* Info Box */
+    .info-box {
+      background: #e3f2fd;
+      border: 1px solid #2196f3;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 20px;
+      color: #1976d2;
+    }
+
+    .info-box h4 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      color: #1565c0;
+    }
+
+    .info-box p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .verify-card {
+        padding: 30px 20px;
+        margin: 20px;
+      }
+      
+      .verify-title {
+        font-size: 24px;
+      }
+      
+      .form-input {
+        font-size: 16px; /* Prevents zoom on iOS */
+      }
+      
+      .info-box {
+        padding: 12px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .verify-card {
+        padding: 20px 15px;
+        margin: 10px;
+      }
+      
+      .verify-title {
+        font-size: 20px;
+      }
+      
+      .verify-subtitle {
+        font-size: 12px;
+      }
+      
+      .form-input {
+        padding: 12px 16px;
+        min-height: 44px; /* Touch-friendly */
+      }
+      
+      .btn-verify,
+      .btn-resend {
+        min-height: 44px;
+        font-size: 16px;
+      }
+      
+      .info-box {
+        padding: 10px;
+      }
+      
+      .info-box h4 {
+        font-size: 14px;
+      }
+      
+      .info-box p {
+        font-size: 12px;
+      }
+    }
+    
+    /* Touch-friendly improvements */
+    @media (hover: none) and (pointer: coarse) {
+      .btn-verify,
+      .btn-resend {
+        min-height: 44px;
+      }
+      
+      .form-input {
+        min-height: 44px;
+      }
+    }
+    
+    /* Landscape orientation */
+    @media (max-width: 768px) and (orientation: landscape) {
+      .verify-container {
+        padding: 20px 0;
+      }
+      
+      .verify-card {
+        margin: 10px;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Verify Your Email</h1>
-    <form id="verifyForm">
-      <label>Email: <input type="email" name="email" required></label>
-      <label>Verification Code: <input type="text" name="code" required></label>
-      <button type="submit">Verify Email</button>
-      <div class="error" id="verifyError"></div>
-      <div class="success" id="verifySuccess"></div>
-    </form>
-    <div class="resend">
-      <button id="resendBtn">Resend Verification Email</button>
-      <div class="success" id="resendSuccess"></div>
+  <div class="verify-container">
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    
+    <!-- Floating Elements -->
+    <div class="floating-elements">
+      <div class="floating-element">🔗</div>
+      <div class="floating-element">📧</div>
+      <div class="floating-element">✅</div>
     </div>
-    <p style="text-align:center;">Back to <a href="/login.html">Login</a></p>
+
+    <!-- Verify Card -->
+    <div class="verify-card">
+      <div class="verify-header">
+        <div class="verify-logo">🔗</div>
+        <h1 class="verify-title">Verify Your Email</h1>
+        <p class="verify-subtitle">Enter your email and verification code to verify your account. If you haven't received a code, you can request one below.</p>
+      </div>
+
+      <div class="info-box">
+        <h4>📧 Check Your Email</h4>
+        <p>Look for an email from Yacht Crew Portal with your 6-digit verification code. If you don't see it, check your spam folder or use the "Resend Verification Code" button below.</p>
+      </div>
+
+      <form id="verifyForm">
+        <div class="form-group">
+          <input type="email" class="form-input" id="email" placeholder="Enter your email address" required>
+          <span class="input-icon">📧</span>
+        </div>
+        
+        <div class="form-group">
+          <input type="text" class="form-input" id="code" placeholder="Enter 6-digit verification code" required maxlength="6">
+          <span class="input-icon">🔢</span>
+        </div>
+
+        <button type="submit" class="btn-verify">
+          <span class="btn-text">Verify Email</span>
+          <div class="loading-spinner"></div>
+        </button>
+
+        <div class="error-message" id="verifyError"></div>
+        <div class="success-message" id="verifySuccess"></div>
+      </form>
+
+      <button class="btn-resend" id="resendBtn">
+        <span class="btn-text">Resend Verification Code</span>
+        <div class="loading-spinner"></div>
+      </button>
+
+      <div class="success-message" id="resendSuccess" style="display: none;"></div>
+
+      <div class="verify-links">
+        <p>Already verified? <a href="/login.html">Sign in</a></p>
+      </div>
+    </div>
   </div>
-  <script src="/verify-email.js"></script>
+
+  <script>
+    // Get email from URL parameters if available
+    const urlParams = new URLSearchParams(window.location.search);
+    const emailFromUrl = urlParams.get('email');
+    if (emailFromUrl) {
+      document.getElementById('email').value = emailFromUrl;
+    }
+
+    // Verify email form
+    document.getElementById('verifyForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const code = document.getElementById('code').value;
+      const btnText = document.querySelector('.btn-verify .btn-text');
+      const spinner = document.querySelector('.btn-verify .loading-spinner');
+      const errorDiv = document.getElementById('verifyError');
+      const successDiv = document.getElementById('verifySuccess');
+      
+      // Hide previous messages
+      errorDiv.style.display = 'none';
+      successDiv.style.display = 'none';
+      
+      // Show loading state
+      btnText.textContent = 'Verifying...';
+      spinner.style.display = 'inline-block';
+      
+      try {
+        const response = await fetch('/api/v1/auth/verify-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, code })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          // Show success message
+          successDiv.textContent = 'Email verified successfully! Redirecting to login...';
+          successDiv.style.display = 'block';
+          
+          // Redirect to login after 2 seconds
+          setTimeout(() => {
+            window.location.href = '/login.html';
+          }, 2000);
+          
+        } else {
+          // Show error message
+          errorDiv.textContent = data.message || 'Verification failed. Please try again.';
+          errorDiv.style.display = 'block';
+        }
+        
+      } catch (error) {
+        console.error('Verification error:', error);
+        errorDiv.textContent = 'Network error. Please check your connection.';
+        errorDiv.style.display = 'block';
+      } finally {
+        // Reset button state
+        btnText.textContent = 'Verify Email';
+        spinner.style.display = 'none';
+      }
+    });
+
+    // Resend verification code
+    document.getElementById('resendBtn').addEventListener('click', async function() {
+      const email = document.getElementById('email').value;
+      const btnText = document.querySelector('.btn-resend .btn-text');
+      const spinner = document.querySelector('.btn-resend .loading-spinner');
+      const successDiv = document.getElementById('resendSuccess');
+      
+      if (!email) {
+        alert('Please enter your email address first.');
+        return;
+      }
+      
+      // Show loading state
+      btnText.textContent = 'Sending...';
+      spinner.style.display = 'inline-block';
+      
+      try {
+        const response = await fetch('/api/v1/auth/resend-verification-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          // Show success message
+          successDiv.textContent = 'Verification code resent! Please check your email.';
+          successDiv.style.display = 'block';
+          
+          // Hide success message after 3 seconds
+          setTimeout(() => {
+            successDiv.style.display = 'none';
+          }, 3000);
+          
+        } else {
+          alert(data.message || 'Failed to resend verification code.');
+        }
+        
+      } catch (error) {
+        console.error('Resend error:', error);
+        alert('Network error. Please check your connection.');
+      } finally {
+        // Reset button state
+        btnText.textContent = 'Resend Verification Code';
+        spinner.style.display = 'none';
+      }
+    });
+
+    // Add some interactive effects
+    document.querySelectorAll('.form-input').forEach(input => {
+      input.addEventListener('focus', function() {
+        this.parentElement.style.transform = 'scale(1.02)';
+      });
+      
+      input.addEventListener('blur', function() {
+        this.parentElement.style.transform = 'scale(1)';
+      });
+    });
+  </script>
 </body>
 </html> 

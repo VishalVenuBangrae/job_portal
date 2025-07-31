@@ -42,7 +42,14 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// Check if email configuration is available
+const isEmailConfigured = process.env.EMAIL_USER && process.env.EMAIL_PASS;
+
 export const sendEmail = async (to, subject, html) => {
+  if (!isEmailConfigured) {
+    console.warn('Email not configured. Skipping email send.');
+    return { message: 'Email not configured' };
+  }
   return transporter.sendMail({
     from: process.env.EMAIL_FROM,
     to,
@@ -85,15 +92,21 @@ export const register = async (req, res) => {
             emailVerified: false,
             emailVerificationCode
         });
-        // Send verification email
-        await sendEmail(email, 'Verify your email', `<p>Your verification code is: <b>${emailVerificationCode}</b></p>`);
+        // Send verification email (if configured)
+        if (isEmailConfigured) {
+            await sendEmail(email, 'Verify your email', `<p>Your verification code is: <b>${emailVerificationCode}</b></p>`);
+        } else {
+            console.log(`Email verification code for ${email}: ${emailVerificationCode}`);
+        }
+        
         res.status(201).json({
             _id: user._id,
             name: user.name,
             email: user.email,
             userType: user.userType,
             token: generateToken(user._id),
-            emailVerified: false
+            emailVerified: false,
+            message: isEmailConfigured ? 'Account created. Please check your email for verification.' : 'Account created. Email verification not configured.'
         });
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -169,29 +182,42 @@ export const resetPasswordEmail = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
+        
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email and password are required' });
+        }
+        
         // Find user
         const user = await User.findOne({ email });
+        
         if (!user) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
-        // Restrict access if email not verified
-        if (!user.emailVerified) {
+        
+        // Restrict access if email not verified (only if email is configured)
+        if (!user.emailVerified && isEmailConfigured) {
             return res.status(403).json({ message: 'Please verify your email before logging in.' });
         }
+        
         // Check password
         const isMatch = await user.matchPassword(password);
+        
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
+        
+        const token = generateToken(user._id);
+        
         res.json({
             _id: user._id,
             name: user.name,
             email: user.email,
             userType: user.userType,
-            token: generateToken(user._id)
+            token: token
         });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error('Login error:', error.message);
+        res.status(500).json({ message: 'Server error during login' });
     }
 };
 

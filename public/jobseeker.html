@@ -3,100 +3,197 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jobseeker Dashboard</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f4; }
-    .container { max-width: 600px; margin: auto; background: #fff; padding: 2em; border-radius: 8px; box-shadow: 0 2px 8px #ccc; }
-    h1 { text-align: center; }
-    .jobs, .applied { margin-top: 2em; }
-    .job, .applied-job { background: #f9f9f9; padding: 1em; border-radius: 4px; margin-bottom: 1em; }
-    a { display: block; margin-top: 2em; text-align: center; color: #007bff; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
+  <title>Jobseeker Dashboard - Yacht Crew Portal</title>
+  <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+  <header class="header">
+    <div class="nav-container">
+      <a href="/jobseeker.html" class="logo">
+        <span class="logo-icon">🔗</span>
+        <span>Yacht Crew Portal</span>
+      </a>
+      <nav class="nav-links">
+        <a href="/jobseeker.html" class="nav-link active">Dashboard</a>
+        <a href="/jobseeker-jobs.html" class="nav-link">Browse Jobs</a>
+        <a href="/jobseeker-applications.html" class="nav-link">My Applications</a>
+        <a href="/change-password.html" class="nav-link">Settings</a>
+        <a href="/login.html" class="nav-link" onclick="logout()">Logout</a>
+      </nav>
+    </div>
+  </header>
+
   <div class="container">
-    <h1>Jobseeker Dashboard</h1>
-    <div class="jobs">
-      <h2>Available Jobs</h2>
-      <div class="job">
-        <strong>Deckhand</strong> at Yacht Co, Monaco<br>
-        <small>Full-time | 3000 EUR/month</small>
-        <p>Looking for experienced deckhand.</p>
-        <button>Apply</button>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="totalApplications">0</div>
+        <div class="stat-label">Applications Submitted</div>
       </div>
-      <!-- More jobs can be listed here dynamically -->
-    </div>
-    <div class="applied">
-      <h2>Applied Jobs</h2>
-      <div class="applied-job">
-        <strong>Deckhand</strong> at Yacht Co, Monaco<br>
-        <small>Application Status: Pending</small>
+      <div class="stat-card">
+        <div class="stat-number" id="pendingApplications">0</div>
+        <div class="stat-label">Pending Review</div>
       </div>
-      <!-- More applied jobs can be listed here dynamically -->
+      <div class="stat-card">
+        <div class="stat-number" id="acceptedApplications">0</div>
+        <div class="stat-label">Accepted</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="availableJobs">0</div>
+        <div class="stat-label">Available Jobs</div>
+      </div>
     </div>
-    <form id="changePasswordForm" style="margin-top:2em;">
-      <h2>Change Password</h2>
-      <label>Current Password: <input type="password" name="currentPassword" required></label>
-      <label>New Password: <input type="password" name="newPassword" required></label>
-      <button type="submit">Change Password</button>
-      <div class="error" id="changePassError"></div>
-      <div class="success" id="changePassSuccess"></div>
-    </form>
-    <button id="logoutBtn" style="margin-top:2em;">Logout</button>
-    <a href="/index.html">Back to Home</a>
+
+    <div class="dashboard-grid">
+      <div class="dashboard-card" onclick="window.location.href='/jobseeker-jobs.html'">
+        <div class="card-icon">🔍</div>
+        <div class="card-title">Browse Jobs</div>
+        <div class="card-description">Search and filter through available yacht crew positions. Find jobs that match your skills and experience.</div>
+        <a href="/jobseeker-jobs.html" class="btn btn-primary">Browse Jobs</a>
+      </div>
+      
+      <div class="dashboard-card" onclick="window.location.href='/jobseeker-applications.html'">
+        <div class="card-icon">📋</div>
+        <div class="card-title">My Applications</div>
+        <div class="card-description">Track your job applications, view status updates, and manage your application history.</div>
+        <a href="/jobseeker-applications.html" class="btn btn-primary">View Applications</a>
+      </div>
+      
+      <div class="dashboard-card" onclick="window.location.href='/change-password.html'">
+        <div class="card-icon">⚙️</div>
+        <div class="card-title">Account Settings</div>
+        <div class="card-description">Update your password and manage your account settings.</div>
+        <a href="/change-password.html" class="btn btn-outline">Settings</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>📝 Recent Applications</h2>
+      </div>
+      <div class="card-body">
+        <div id="recentApplicationsList">
+          <div class="loading">
+            <div class="spinner"></div>
+            Loading recent applications...
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+
   <script>
+    // Check authentication on page load
     document.addEventListener('DOMContentLoaded', function() {
       const token = localStorage.getItem('token');
       const userType = localStorage.getItem('userType');
-      if (!token) {
+      
+      if (!token || userType !== 'jobseeker') {
+        // Not authenticated or wrong user type, redirect to login
         window.location.href = '/login.html';
-      } else if (userType !== 'jobseeker') {
-        window.location.href = '/employer.html';
-      }
-      const logoutBtn = document.getElementById('logoutBtn');
-      if (logoutBtn) {
-        logoutBtn.onclick = function() {
-          localStorage.removeItem('token');
-          localStorage.removeItem('userType');
-          window.location.href = '/login.html';
-        };
-      }
-      // Change password form
-      const changePasswordForm = document.getElementById('changePasswordForm');
-      if (changePasswordForm) {
-        changePasswordForm.onsubmit = async function(e) {
-          e.preventDefault();
-          const currentPassword = this.currentPassword.value;
-          const newPassword = this.newPassword.value;
-          const errorDiv = document.getElementById('changePassError');
-          const successDiv = document.getElementById('changePassSuccess');
-          errorDiv.textContent = '';
-          successDiv.textContent = '';
-          try {
-            const res = await fetch('/api/v1/auth/change-password', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
-              },
-              body: JSON.stringify({ currentPassword, newPassword })
-            });
-            const data = await res.json();
-            if (!res.ok) {
-              errorDiv.textContent = data.message || 'Failed to change password';
-              return;
-            }
-            successDiv.textContent = 'Password changed successfully!';
-            changePasswordForm.reset();
-          } catch (err) {
-            errorDiv.textContent = 'Network error';
-          }
-        };
+        return;
       }
     });
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userType');
+      window.location.href = '/login.html';
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+
+    async function loadDashboardData() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      try {
+        // Load applied jobs
+        const appliedRes = await fetch('/api/v1/jobs/applied', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const appliedJobs = await appliedRes.json();
+
+        // Load available jobs count
+        const availableRes = await fetch('/api/v1/jobs', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const availableJobs = await availableRes.json();
+        const activeJobs = availableJobs.filter(job => job.status === 'active');
+
+        // Calculate stats
+        const totalApplications = appliedJobs.length;
+        const pendingApplications = appliedJobs.filter(job => job.status === 'pending').length;
+        const acceptedApplications = appliedJobs.filter(job => job.status === 'accepted').length;
+        const availableJobsCount = activeJobs.length;
+
+        // Update stats
+        document.getElementById('totalApplications').textContent = totalApplications;
+        document.getElementById('pendingApplications').textContent = pendingApplications;
+        document.getElementById('acceptedApplications').textContent = acceptedApplications;
+        document.getElementById('availableJobs').textContent = availableJobsCount;
+
+        // Display recent applications
+        const recentApplicationsDiv = document.getElementById('recentApplicationsList');
+        if (appliedJobs.length === 0) {
+          recentApplicationsDiv.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">📋</div>
+              <h3>No applications yet</h3>
+              <p>Start browsing jobs to submit your first application!</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Sort by application date (newest first) and take latest 5
+        const recentApplications = appliedJobs
+          .sort((a, b) => new Date(b.appliedAt) - new Date(a.appliedAt))
+          .slice(0, 5);
+
+        recentApplicationsDiv.innerHTML = recentApplications.map(job => `
+          <div class="job-card">
+            <div class="job-header">
+              <div>
+                <div class="job-title">${job.title}</div>
+                <div class="job-company">${job.company}</div>
+                <div class="job-meta">
+                  <span class="job-tag job-category">${job.jobCategory}</span>
+                  <span class="job-tag job-position">${job.position}</span>
+                  <span class="job-tag job-type">${job.jobType}</span>
+                  <span class="job-tag job-location">${job.location}</span>
+                  <span class="job-tag job-salary">${job.salary}</span>
+                </div>
+                <div class="job-date">Applied: ${formatDate(job.appliedAt)}</div>
+              </div>
+              <div>
+                <span class="status-badge status-${job.status}">${job.status}</span>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
+        document.getElementById('recentApplicationsList').innerHTML = `
+          <div class="message message-error">
+            Error loading dashboard data. Please try again later.
+          </div>
+        `;
+      }
+    }
+
+    // Load dashboard data when page loads
+    document.addEventListener('DOMContentLoaded', loadDashboardData);
   </script>
-  <script src="/jobseeker.js"></script>
 </body>
 </html> 

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browse Jobs - Yacht Crew Portal</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="nav-container">
+      <a href="/jobseeker.html" class="logo">
+        <span class="logo-icon">🔗</span>
+        <span>Yacht Crew Portal</span>
+      </a>
+      <nav class="nav-links">
+        <a href="/jobseeker.html" class="nav-link">Dashboard</a>
+        <a href="/jobseeker-jobs.html" class="nav-link active">Browse Jobs</a>
+        <a href="/jobseeker-applications.html" class="nav-link">My Applications</a>
+        <a href="/change-password.html" class="nav-link">Settings</a>
+        <a href="/login.html" class="nav-link" onclick="logout()">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="filter-section">
+      <h3>🔍 Filter Jobs</h3>
+      <div class="filter-row">
+        <select id="categoryFilter" class="filter-select" onchange="filterJobs()">
+          <option value="">All Categories</option>
+          <option value="Daywork/Freelance">Daywork/Freelance</option>
+          <option value="Deliveries">Deliveries</option>
+        </select>
+        <select id="positionFilter" class="filter-select" onchange="filterJobs()">
+          <option value="">All Positions</option>
+          <option value="Captain">Captain</option>
+          <option value="Engineer">Engineer</option>
+          <option value="Bosun">Bosun</option>
+          <option value="Mate">Mate</option>
+          <option value="Deckhand">Deckhand</option>
+          <option value="Chef/crew cook">Chef/crew cook</option>
+          <option value="Chief Stewardess">Chief Stewardess</option>
+          <option value="2nd Stewardess">2nd Stewardess</option>
+          <option value="Stewardess">Stewardess</option>
+        </select>
+        <select id="jobTypeFilter" class="filter-select" onchange="filterJobs()">
+          <option value="">All Job Types</option>
+          <option value="Full-time">Full-time</option>
+          <option value="Part-time">Part-time</option>
+          <option value="Contract">Contract</option>
+          <option value="Temporary">Temporary</option>
+        </select>
+        <input type="text" id="searchFilter" class="filter-input" placeholder="Search jobs..." onkeyup="filterJobs()">
+        <button class="btn btn-outline" onclick="clearFilters()">Clear Filters</button>
+      </div>
+    </div>
+
+    <div id="jobsList">
+      <div class="loading">
+        <div class="spinner"></div>
+        Loading jobs...
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Modal -->
+  <div id="applicationModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Apply for Job</h2>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="applicationForm">
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input type="email" name="email" class="form-input" required placeholder="your.email@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number *</label>
+            <input type="tel" name="phone" class="form-input" required placeholder="+1 (555) 123-4567">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cover Letter *</label>
+            <textarea name="coverLetter" class="form-textarea" required placeholder="Tell us why you're interested in this position and why you'd be a great fit..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Resume *</label>
+            <input type="file" name="resume" class="form-input" accept=".pdf,.doc,.docx" required>
+            <small style="color: var(--text-light); margin-top: 4px; display: block;">
+              PDF, DOC, or DOCX files only (max 5MB)
+            </small>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" style="width: 100%;">
+            Submit Application
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allJobs = [];
+    let currentJobId = null;
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userType');
+      window.location.href = '/login.html';
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    async function loadJobs() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/v1/jobs', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const jobs = await res.json();
+        
+        // Filter only active jobs and sort by newest first
+        allJobs = jobs.filter(job => job.status === 'active')
+                     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        
+        displayJobs(allJobs);
+      } catch (error) {
+        document.getElementById('jobsList').innerHTML = `
+          <div class="message message-error">
+            Error loading jobs. Please try again later.
+          </div>
+        `;
+      }
+    }
+
+    function displayJobs(jobs) {
+      const jobsDiv = document.getElementById('jobsList');
+      
+      if (jobs.length === 0) {
+        jobsDiv.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <h3>No jobs available</h3>
+            <p>No jobs match your current filters. Try adjusting your search criteria.</p>
+          </div>
+        `;
+        return;
+      }
+
+      jobsDiv.innerHTML = jobs.map(job => `
+        <div class="job-card">
+          <div class="job-header">
+            <div>
+              <div class="job-title">${job.title}</div>
+              <div class="job-company">${job.company}</div>
+              <div class="job-meta">
+                <span class="job-tag job-category">${job.jobCategory}</span>
+                <span class="job-tag job-position">${job.position}</span>
+                <span class="job-tag job-type">${job.jobType}</span>
+                <span class="job-tag job-location">${job.location}</span>
+                <span class="job-tag job-salary">${job.salary}</span>
+              </div>
+              <div class="job-date">Posted: ${formatDate(job.createdAt)}</div>
+            </div>
+            <div>
+              <button onclick="openApplicationModal('${job._id}')" class="btn btn-success">
+                Apply Now
+              </button>
+            </div>
+          </div>
+          
+          <div class="job-description">
+            <strong>Description:</strong><br>
+            ${job.description}
+          </div>
+          
+          ${job.requirements && job.requirements.length > 0 ? `
+            <div class="job-requirements">
+              <h4>Requirements</h4>
+              ${job.requirements.join(', ')}
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    function filterJobs() {
+      const categoryFilter = document.getElementById('categoryFilter').value;
+      const positionFilter = document.getElementById('positionFilter').value;
+      const jobTypeFilter = document.getElementById('jobTypeFilter').value;
+      const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+      
+      let filteredJobs = allJobs;
+      
+      if (categoryFilter) {
+        filteredJobs = filteredJobs.filter(job => job.jobCategory === categoryFilter);
+      }
+      
+      if (positionFilter) {
+        filteredJobs = filteredJobs.filter(job => job.position === positionFilter);
+      }
+      
+      if (jobTypeFilter) {
+        filteredJobs = filteredJobs.filter(job => job.jobType === jobTypeFilter);
+      }
+      
+      if (searchFilter) {
+        filteredJobs = filteredJobs.filter(job => 
+          job.title.toLowerCase().includes(searchFilter) ||
+          job.company.toLowerCase().includes(searchFilter) ||
+          job.location.toLowerCase().includes(searchFilter) ||
+          job.description.toLowerCase().includes(searchFilter)
+        );
+      }
+      
+      displayJobs(filteredJobs);
+    }
+
+    function clearFilters() {
+      document.getElementById('categoryFilter').value = '';
+      document.getElementById('positionFilter').value = '';
+      document.getElementById('jobTypeFilter').value = '';
+      document.getElementById('searchFilter').value = '';
+      displayJobs(allJobs);
+    }
+
+    function openApplicationModal(jobId) {
+      currentJobId = jobId;
+      document.getElementById('applicationModal').style.display = 'block';
+      document.getElementById('applicationForm').reset();
+      
+      // Pre-fill email if available from user data
+      const userEmail = localStorage.getItem('userEmail');
+      if (userEmail) {
+        document.querySelector('input[name="email"]').value = userEmail;
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('applicationModal').style.display = 'none';
+      currentJobId = null;
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('applicationModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      const applicationForm = document.getElementById('applicationForm');
+      const submitBtn = document.getElementById('submitBtn');
+
+      if (applicationForm) {
+        applicationForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          if (!currentJobId) {
+            alert('No job selected');
+            return;
+          }
+
+          // Disable submit button
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<div class="spinner"></div> Submitting...';
+
+          const formData = new FormData(this);
+          
+          // Get form values
+          const email = formData.get('email');
+          const phone = formData.get('phone');
+          const coverLetter = formData.get('coverLetter');
+          
+          // Validate email format
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address');
+            return;
+          }
+          
+          // Validate phone number (basic validation)
+          const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+          if (!phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''))) {
+            alert('Please enter a valid phone number');
+            return;
+          }
+          
+          // Create new FormData with only the values we need
+          const cleanFormData = new FormData();
+          cleanFormData.append('email', email);
+          cleanFormData.append('phone', phone);
+          cleanFormData.append('coverLetter', coverLetter);
+          
+          // Add the resume file
+          const resumeFile = formData.get('resume');
+          if (resumeFile) {
+            cleanFormData.append('resume', resumeFile);
+          }
+
+                      try {
+              const res = await fetch(`/api/v1/jobs/${currentJobId}/apply`, {
+                method: 'POST',
+                headers: {
+                  'Authorization': 'Bearer ' + token
+                },
+                body: cleanFormData
+              });
+
+            if (res.ok) {
+              alert('Application submitted successfully!');
+              closeModal();
+              // Refresh the jobs list
+              loadJobs();
+            } else {
+              const data = await res.json();
+              alert(data.message || 'Failed to submit application');
+            }
+          } catch (error) {
+            alert('Error submitting application');
+          } finally {
+            // Re-enable submit button
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Submit Application';
+          }
+        });
+      }
+
+      // Load jobs when page loads
+      loadJobs();
+    });
+  </script>
+</body>
+</html> 

@@ -66,9 +66,42 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Hash password before saving
+// Password validation and hashing
 userSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) return next();
+    if (!this.isModified('password')) {
+        return next();
+    }
+    
+    // Password strength validation (relaxed for development)
+    const password = this.password;
+    const minLength = 6; // Reduced from 8 for development
+    
+    if (password.length < minLength) {
+        return next(new Error('Password must be at least 6 characters long'));
+    }
+    
+    // Optional: Uncomment for stricter password requirements in production
+    /*
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
+    if (!hasUppercase) {
+        return next(new Error('Password must contain at least one uppercase letter'));
+    }
+    if (!hasLowercase) {
+        return next(new Error('Password must contain at least one lowercase letter'));
+    }
+    if (!hasNumbers) {
+        return next(new Error('Password must contain at least one number'));
+    }
+    if (!hasSpecialChars) {
+        return next(new Error('Password must contain at least one special character'));
+    }
+    */
+    
+    // Hash password with higher salt rounds for security
     this.password = await bcrypt.hash(this.password, 12);
     next();
 });

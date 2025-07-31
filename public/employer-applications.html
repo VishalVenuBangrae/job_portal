@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Applications - Yacht Crew Portal</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="nav-container">
+      <a href="/employer.html" class="logo">
+        <span class="logo-icon">🔗</span>
+        <span>Yacht Crew Portal</span>
+      </a>
+      <nav class="nav-links">
+        <a href="/employer.html" class="nav-link">Dashboard</a>
+        <a href="/post-job.html" class="nav-link">Post Job</a>
+        <a href="/employer-applications.html" class="nav-link active">Applications</a>
+        <a href="/change-password.html" class="nav-link">Settings</a>
+        <a href="/login.html" class="nav-link" onclick="logout()">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="totalApplications">0</div>
+        <div class="stat-label">Total Applications</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="pendingApplications">0</div>
+        <div class="stat-label">Pending Review</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="acceptedApplications">0</div>
+        <div class="stat-label">Accepted</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="rejectedApplications">0</div>
+        <div class="stat-label">Rejected</div>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <h3>🔍 Filter Applications</h3>
+      <div class="filter-row">
+        <select id="statusFilter" class="filter-select" onchange="filterApplications()">
+          <option value="">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="reviewed">Reviewed</option>
+          <option value="accepted">Accepted</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <select id="categoryFilter" class="filter-select" onchange="filterApplications()">
+          <option value="">All Categories</option>
+          <option value="Daywork/Freelance">Daywork/Freelance</option>
+          <option value="Deliveries">Deliveries</option>
+        </select>
+        <select id="positionFilter" class="filter-select" onchange="filterApplications()">
+          <option value="">All Positions</option>
+          <option value="Captain">Captain</option>
+          <option value="Engineer">Engineer</option>
+          <option value="Bosun">Bosun</option>
+          <option value="Mate">Mate</option>
+          <option value="Deckhand">Deckhand</option>
+          <option value="Chef/crew cook">Chef/crew cook</option>
+          <option value="Chief Stewardess">Chief Stewardess</option>
+          <option value="2nd Stewardess">2nd Stewardess</option>
+          <option value="Stewardess">Stewardess</option>
+        </select>
+        <input type="text" id="searchFilter" class="filter-input" placeholder="Search by name or email..." onkeyup="filterApplications()">
+        <button class="btn btn-outline" onclick="clearFilters()">Clear Filters</button>
+      </div>
+    </div>
+
+    <div id="applicationsList">
+      <div class="loading">
+        <div class="spinner"></div>
+        Loading applications...
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allApplications = [];
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userType');
+      window.location.href = '/login.html';
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    async function loadAllApplications() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/v1/jobs/posted', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const jobs = await res.json();
+        
+        if (jobs.length === 0) {
+          document.getElementById('applicationsList').innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">📋</div>
+              <h3>No jobs posted yet</h3>
+              <p>Post some jobs to start receiving applications!</p>
+            </div>
+          `;
+          return;
+        }
+
+        allApplications = [];
+        
+        // Collect all applications from all jobs with detailed applicant info
+        for (const job of jobs) {
+          if (job.applications && job.applications.length > 0) {
+            // Fetch detailed applications for this job
+            try {
+              const appRes = await fetch(`/api/v1/jobs/${job._id}/applications`, {
+                headers: { 'Authorization': 'Bearer ' + token }
+              });
+              const detailedApplications = await appRes.json();
+              
+              detailedApplications.forEach(app => {
+                app.jobTitle = job.title;
+                app.jobCompany = job.company;
+                app.jobCategory = job.jobCategory;
+                app.jobPosition = job.position;
+                app.jobLocation = job.location;
+                app.jobType = job.jobType;
+                app.jobSalary = job.salary;
+                allApplications.push(app);
+              });
+            } catch (error) {
+              console.error(`Error fetching applications for job ${job._id}:`, error);
+              // Fallback to basic application data
+              job.applications.forEach(app => {
+                app.jobTitle = job.title;
+                app.jobCompany = job.company;
+                app.jobCategory = job.jobCategory;
+                app.jobPosition = job.position;
+                app.jobLocation = job.location;
+                app.jobType = job.jobType;
+                app.jobSalary = job.salary;
+                allApplications.push(app);
+              });
+            }
+          }
+        }
+
+        if (allApplications.length === 0) {
+          document.getElementById('applicationsList').innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">📋</div>
+              <h3>No applications received yet</h3>
+              <p>Applications will appear here once jobseekers start applying to your jobs.</p>
+            </div>
+          `;
+          updateStats();
+          return;
+        }
+
+        // Sort applications by newest first
+        allApplications.sort((a, b) => new Date(b.appliedAt) - new Date(a.appliedAt));
+        
+        displayApplications(allApplications);
+        updateStats();
+      } catch (error) {
+        document.getElementById('applicationsList').innerHTML = `
+          <div class="message message-error">
+            Error loading applications. Please try again later.
+          </div>
+        `;
+      }
+    }
+
+    function displayApplications(applications) {
+      const applicationsDiv = document.getElementById('applicationsList');
+      
+      if (applications.length === 0) {
+        applicationsDiv.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <h3>No applications match your filters</h3>
+            <p>Try adjusting your search criteria.</p>
+          </div>
+        `;
+        return;
+      }
+
+      applicationsDiv.innerHTML = applications.map(app => `
+        <div class="application-card">
+          <div class="application-header">
+            <div>
+              <div class="applicant-name">${app.applicantName || app.applicant?.name || app.email?.split('@')[0] || 'Unknown Applicant'}</div>
+              <div class="job-company">${app.jobTitle} at ${app.jobCompany}</div>
+              <div class="job-meta">
+                <span class="job-tag job-category">${app.jobCategory}</span>
+                <span class="job-tag job-position">${app.jobPosition}</span>
+                <span class="job-tag job-type">${app.jobType}</span>
+                <span class="job-tag job-location">${app.jobLocation}</span>
+                <span class="job-tag job-salary">${app.jobSalary}</span>
+              </div>
+              <div class="job-date">Applied: ${formatDate(app.appliedAt)}</div>
+            </div>
+            <div>
+              <div style="margin-bottom: 8px;">
+                <span class="status-badge status-${app.status}">${app.status}</span>
+              </div>
+              <div class="status-actions">
+                <button class="btn btn-sm ${app.status === 'pending' ? 'btn-primary' : 'btn-outline'}" 
+                        onclick="updateApplicationStatus('${app._id}', 'pending')" 
+                        ${app.status === 'pending' ? 'disabled' : ''}>
+                  ⏳ Pending
+                </button>
+                <button class="btn btn-sm ${app.status === 'reviewed' ? 'btn-primary' : 'btn-outline'}" 
+                        onclick="updateApplicationStatus('${app._id}', 'reviewed')" 
+                        ${app.status === 'reviewed' ? 'disabled' : ''}>
+                  👁️ Reviewed
+                </button>
+                <button class="btn btn-sm ${app.status === 'accepted' ? 'btn-success' : 'btn-outline'}" 
+                        onclick="updateApplicationStatus('${app._id}', 'accepted')" 
+                        ${app.status === 'accepted' ? 'disabled' : ''}>
+                  ✅ Accept
+                </button>
+                <button class="btn btn-sm ${app.status === 'rejected' ? 'btn-danger' : 'btn-outline'}" 
+                        onclick="updateApplicationStatus('${app._id}', 'rejected')" 
+                        ${app.status === 'rejected' ? 'disabled' : ''}>
+                  ❌ Reject
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="contact-info">
+            <h4>📞 Contact Information</h4>
+            <p><strong>Email:</strong> <a href="mailto:${app.email || app.applicant?.email || ''}" class="contact-link">${app.email || app.applicant?.email || 'Not provided'}</a></p>
+            <p><strong>Phone:</strong> <a href="tel:${app.phone || app.applicant?.phone || ''}" class="contact-link">${app.phone || app.applicant?.phone || 'Not provided'}</a></p>
+          </div>
+          
+          ${app.resume ? `
+            <div style="margin: 16px 0;">
+              <a href="/uploads/${app.resume.filename}" target="_blank" download="${app.resume.originalName || 'resume'}" class="btn btn-success btn-sm">
+                📄 Download Resume (${app.resume.originalName || 'resume'})
+              </a>
+            </div>
+          ` : ''}
+          
+          ${app.coverLetter ? `
+            <div class="job-requirements">
+              <h4>💼 Cover Letter</h4>
+              <p>${app.coverLetter}</p>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    function updateStats() {
+      const total = allApplications.length;
+      const pending = allApplications.filter(app => app.status === 'pending').length;
+      const accepted = allApplications.filter(app => app.status === 'accepted').length;
+      const rejected = allApplications.filter(app => app.status === 'rejected').length;
+      
+      document.getElementById('totalApplications').textContent = total;
+      document.getElementById('pendingApplications').textContent = pending;
+      document.getElementById('acceptedApplications').textContent = accepted;
+      document.getElementById('rejectedApplications').textContent = rejected;
+    }
+
+    function filterApplications() {
+      const statusFilter = document.getElementById('statusFilter').value;
+      const categoryFilter = document.getElementById('categoryFilter').value;
+      const positionFilter = document.getElementById('positionFilter').value;
+      const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+      
+      let filteredApplications = allApplications;
+      
+      if (statusFilter) {
+        filteredApplications = filteredApplications.filter(app => app.status === statusFilter);
+      }
+      
+      if (categoryFilter) {
+        filteredApplications = filteredApplications.filter(app => app.jobCategory === categoryFilter);
+      }
+      
+      if (positionFilter) {
+        filteredApplications = filteredApplications.filter(app => app.jobPosition === positionFilter);
+      }
+      
+      if (searchFilter) {
+        filteredApplications = filteredApplications.filter(app => 
+          (app.applicant?.name || '').toLowerCase().includes(searchFilter) ||
+          (app.email || '').toLowerCase().includes(searchFilter) ||
+          (app.applicant?.email || '').toLowerCase().includes(searchFilter)
+        );
+      }
+      
+      displayApplications(filteredApplications);
+    }
+
+    function clearFilters() {
+      document.getElementById('statusFilter').value = '';
+      document.getElementById('categoryFilter').value = '';
+      document.getElementById('positionFilter').value = '';
+      document.getElementById('searchFilter').value = '';
+      displayApplications(allApplications);
+    }
+
+    async function updateApplicationStatus(applicationId, status) {
+      const token = localStorage.getItem('token');
+      
+      // Show loading state
+      const button = event.target;
+      const originalText = button.innerHTML;
+      button.innerHTML = '⏳ Updating...';
+      button.disabled = true;
+      
+      try {
+        console.log('Updating application status:', applicationId, status);
+        
+        const res = await fetch(`/api/v1/jobs/applications/${applicationId}/status`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ status })
+        });
+        
+        console.log('Response status:', res.status);
+        
+        if (res.ok) {
+          // Update the application in our local array
+          const app = allApplications.find(a => a._id === applicationId);
+          if (app) {
+            app.status = status;
+            console.log('Application status updated locally');
+          }
+          
+          // Refresh the display
+          displayApplications(allApplications);
+          updateStats();
+          
+          // Show success message
+          showMessage(`Application status updated to ${status}`, 'success');
+        } else {
+          const errorData = await res.json();
+          console.error('API Error:', errorData);
+          throw new Error(errorData.message || `HTTP ${res.status}`);
+        }
+      } catch (error) {
+        console.error('Error updating application status:', error);
+        showMessage(`Failed to update application status: ${error.message}`, 'error');
+      } finally {
+        // Restore button state
+        button.innerHTML = originalText;
+        button.disabled = false;
+      }
+    }
+
+    function showMessage(message, type = 'info') {
+      // Create message element
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message message-${type}`;
+      messageDiv.style.position = 'fixed';
+      messageDiv.style.top = '20px';
+      messageDiv.style.right = '20px';
+      messageDiv.style.zIndex = '1000';
+      messageDiv.style.padding = '12px 20px';
+      messageDiv.style.borderRadius = '8px';
+      messageDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+      messageDiv.style.maxWidth = '300px';
+      messageDiv.textContent = message;
+      
+      // Add to page
+      document.body.appendChild(messageDiv);
+      
+      // Remove after 3 seconds
+      setTimeout(() => {
+        if (messageDiv.parentNode) {
+          messageDiv.parentNode.removeChild(messageDiv);
+        }
+      }, 3000);
+    }
+
+    // Load applications when page loads
+    document.addEventListener('DOMContentLoaded', loadAllApplications);
+  </script>
+</body>
+</html> 

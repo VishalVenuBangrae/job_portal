@@ -32,6 +32,22 @@ const jobSchema = new mongoose.Schema({
         enum: ['Full-time', 'Part-time', 'Contract', 'Temporary'],
         required: true
     },
+    jobCategory: {
+        type: String,
+        enum: ['Daywork/Freelance', 'Deliveries'],
+        required: true
+    },
+    position: {
+        type: String,
+        enum: [
+            // Daywork/Freelance positions
+            'Captain', 'Engineer', 'Bosun', 'Mate', 'Deckhand', 
+            'Chef/crew cook', 'Chief Stewardess', '2nd Stewardess',
+            // Delivery positions
+            'Stewardess'
+        ],
+        required: true
+    },
     employer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -41,6 +57,22 @@ const jobSchema = new mongoose.Schema({
         applicant: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
+        },
+        email: {
+            type: String,
+            required: true
+        },
+        phone: {
+            type: String
+        },
+        resume: {
+            filename: String,
+            originalName: String,
+            path: String,
+            mimetype: String
+        },
+        coverLetter: {
+            type: String
         },
         status: {
             type: String,

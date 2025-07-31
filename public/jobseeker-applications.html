@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>My Applications - Yacht Crew Portal</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="nav-container">
+      <a href="/jobseeker.html" class="logo">
+        <span class="logo-icon">🔗</span>
+        <span>Yacht Crew Portal</span>
+      </a>
+      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+      <nav class="nav-links desktop-nav">
+        <a href="/jobseeker.html" class="nav-link">Dashboard</a>
+        <a href="/jobseeker-jobs.html" class="nav-link">Browse Jobs</a>
+        <a href="/jobseeker-applications.html" class="nav-link active">My Applications</a>
+        <a href="/change-password.html" class="nav-link">Settings</a>
+        <a href="/login.html" class="nav-link" onclick="logout()">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="totalApplications">0</div>
+        <div class="stat-label">Total Applications</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="pendingApplications">0</div>
+        <div class="stat-label">Pending Review</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="acceptedApplications">0</div>
+        <div class="stat-label">Accepted</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="rejectedApplications">0</div>
+        <div class="stat-label">Rejected</div>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <h3>🔍 Filter Applications</h3>
+      <div class="filter-row">
+        <select id="statusFilter" class="filter-select" onchange="filterApplications()">
+          <option value="">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="reviewed">Reviewed</option>
+          <option value="accepted">Accepted</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <select id="categoryFilter" class="filter-select" onchange="filterApplications()">
+          <option value="">All Categories</option>
+          <option value="Daywork/Freelance">Daywork/Freelance</option>
+          <option value="Deliveries">Deliveries</option>
+        </select>
+        <select id="positionFilter" class="filter-select" onchange="filterApplications()">
+          <option value="">All Positions</option>
+          <option value="Captain">Captain</option>
+          <option value="Engineer">Engineer</option>
+          <option value="Bosun">Bosun</option>
+          <option value="Mate">Mate</option>
+          <option value="Deckhand">Deckhand</option>
+          <option value="Chef/crew cook">Chef/crew cook</option>
+          <option value="Chief Stewardess">Chief Stewardess</option>
+          <option value="2nd Stewardess">2nd Stewardess</option>
+          <option value="Stewardess">Stewardess</option>
+        </select>
+        <button class="btn btn-outline" onclick="clearFilters()">Clear Filters</button>
+      </div>
+    </div>
+
+    <div id="applicationsList">
+      <div class="loading">
+        <div class="spinner"></div>
+        Loading applications...
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allApplications = [];
+
+    function toggleMobileMenu() {
+      const navLinks = document.querySelector('.nav-links');
+      navLinks.classList.toggle('show');
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userType');
+      window.location.href = '/login.html';
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    async function loadApplications() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      try {
+        console.log('Making request to /api/v1/jobs/applied with token');
+        const res = await fetch('/api/v1/jobs/applied', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        
+        console.log('Response status:', res.status);
+        
+        if (!res.ok) {
+          const errorData = await res.json();
+          console.error('API Error:', errorData);
+          throw new Error(errorData.message || `HTTP ${res.status}`);
+        }
+        
+        const applications = await res.json();
+        console.log('Applications received:', applications);
+        
+        if (applications.length === 0) {
+          document.getElementById('applicationsList').innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">📋</div>
+              <h3>No applications yet</h3>
+              <p>Start browsing jobs to submit your first application!</p>
+            </div>
+          `;
+          updateStats();
+          return;
+        }
+
+        // Sort by application date (newest first)
+        allApplications = applications.sort((a, b) => new Date(b.appliedAt) - new Date(a.appliedAt));
+        
+        displayApplications(allApplications);
+        updateStats();
+      } catch (error) {
+        console.error('loadApplications error:', error);
+        document.getElementById('applicationsList').innerHTML = `
+          <div class="message message-error">
+            Error loading applications: ${error.message}. Please try again later.
+          </div>
+        `;
+      }
+    }
+
+    function displayApplications(applications) {
+      const applicationsDiv = document.getElementById('applicationsList');
+      
+      if (applications.length === 0) {
+        applicationsDiv.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <h3>No applications match your filters</h3>
+            <p>Try adjusting your search criteria.</p>
+          </div>
+        `;
+        return;
+      }
+
+      applicationsDiv.innerHTML = applications.map(job => `
+        <div class="application-card">
+          <div class="application-header">
+            <div>
+              <div class="job-title">${job.title}</div>
+              <div class="job-company">${job.company}</div>
+              <div class="job-meta">
+                <span class="job-tag job-category">${job.jobCategory}</span>
+                <span class="job-tag job-position">${job.position}</span>
+                <span class="job-tag job-type">${job.jobType}</span>
+                <span class="job-tag job-location">${job.location}</span>
+                <span class="job-tag job-salary">${job.salary}</span>
+              </div>
+              <div class="job-date">Applied: ${formatDate(job.appliedAt)}</div>
+            </div>
+            <div>
+              <span class="status-badge status-${job.status}">${job.status}</span>
+            </div>
+          </div>
+          
+          <div class="job-requirements">
+            <h4>📋 Job Details</h4>
+            <p><strong>Description:</strong> ${job.description}</p>
+            ${job.requirements && job.requirements.length > 0 ? 
+              `<p><strong>Requirements:</strong> ${job.requirements.join(', ')}</p>` : ''}
+          </div>
+          
+          ${job.coverLetter ? `
+            <div class="job-requirements">
+              <h4>💼 Your Cover Letter</h4>
+              <p>${job.coverLetter}</p>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    function updateStats() {
+      const total = allApplications.length;
+      const pending = allApplications.filter(app => app.status === 'pending').length;
+      const accepted = allApplications.filter(app => app.status === 'accepted').length;
+      const rejected = allApplications.filter(app => app.status === 'rejected').length;
+      
+      document.getElementById('totalApplications').textContent = total;
+      document.getElementById('pendingApplications').textContent = pending;
+      document.getElementById('acceptedApplications').textContent = accepted;
+      document.getElementById('rejectedApplications').textContent = rejected;
+    }
+
+    function filterApplications() {
+      const statusFilter = document.getElementById('statusFilter').value;
+      const categoryFilter = document.getElementById('categoryFilter').value;
+      const positionFilter = document.getElementById('positionFilter').value;
+      
+      let filteredApplications = allApplications;
+      
+      if (statusFilter) {
+        filteredApplications = filteredApplications.filter(app => app.status === statusFilter);
+      }
+      
+      if (categoryFilter) {
+        filteredApplications = filteredApplications.filter(app => app.jobCategory === categoryFilter);
+      }
+      
+      if (positionFilter) {
+        filteredApplications = filteredApplications.filter(app => app.position === positionFilter);
+      }
+      
+      displayApplications(filteredApplications);
+    }
+
+    function clearFilters() {
+      document.getElementById('statusFilter').value = '';
+      document.getElementById('categoryFilter').value = '';
+      document.getElementById('positionFilter').value = '';
+      displayApplications(allApplications);
+    }
+
+    // Load applications when page loads
+    document.addEventListener('DOMContentLoaded', loadApplications);
+  </script>
+</body>
+</html> 
