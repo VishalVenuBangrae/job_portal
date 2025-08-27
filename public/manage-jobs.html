@@ -13,7 +13,8 @@
         <span class="logo-icon">🔗</span>
         <span>Yacht Crew Portal</span>
       </a>
-      <nav class="nav-links">
+      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+      <nav class="nav-links" id="navLinks">
         <a href="/employer.html" class="nav-link">Dashboard</a>
         <a href="/post-job.html" class="nav-link">Post Job</a>
         <a href="/employer-applications.html" class="nav-link">Applications</a>
@@ -69,6 +70,21 @@
           <option value="2nd Stewardess">2nd Stewardess</option>
           <option value="Stewardess">Stewardess</option>
         </select>
+      </div>
+      
+      <div class="filter-row">
+        <div class="location-selector">
+          <select id="countryFilter" class="filter-select" onchange="loadFilterCities()">
+            <option value="">All Countries</option>
+          </select>
+          <select id="cityFilter" class="filter-select" onchange="loadFilterPorts()">
+            <option value="">All Cities</option>
+          </select>
+          <select id="portFilter" class="filter-select" onchange="handlePortSelection()">
+            <option value="">All Ports</option>
+          </select>
+          <input type="text" id="customPortInput" class="form-input" placeholder="Type custom port name..." style="display: none;" onkeyup="handleCustomPortInput()">
+        </div>
         <button class="btn btn-outline" onclick="clearFilters()">Clear Filters</button>
       </div>
     </div>
@@ -98,10 +114,22 @@
             <label class="form-label">Company</label>
             <input type="text" id="editCompany" class="form-input" required>
           </div>
-          <div class="form-group">
-            <label class="form-label">Location</label>
-            <input type="text" id="editLocation" class="form-input" required>
-          </div>
+                     <div class="form-group">
+             <label class="form-label">Location *</label>
+             <div class="location-selector">
+               <select id="editCountry" class="form-select" required onchange="loadEditCities()">
+                 <option value="">Select Country</option>
+               </select>
+               <select id="editCity" class="form-select" required onchange="loadEditPorts()" disabled>
+                 <option value="">Select City</option>
+               </select>
+               <select id="editPort" class="form-select" onchange="handleEditPortSelection()">
+                 <option value="">Select Port (Optional)</option>
+               </select>
+               <input type="text" id="editCustomPort" class="form-input" placeholder="Or type custom port name..." style="display: none;" onkeyup="handleEditCustomPortInput()">
+               <input type="text" id="editLocationDisplay" class="form-input" readonly placeholder="Location will be displayed here">
+             </div>
+           </div>
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Job Category</label>
@@ -173,10 +201,34 @@
       return date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+        day: 'numeric'
       });
+    }
+
+    // Helper function to format location display
+    function formatLocation(location) {
+      if (!location) return 'Location not specified';
+      
+      // If location is a string (old format), return as is
+      if (typeof location === 'string') {
+        return location;
+      }
+      
+      // If location is an object (new format), format it properly
+      if (typeof location === 'object') {
+        if (location.displayName) {
+          return location.displayName;
+        }
+        
+        let locationParts = [];
+        if (location.city) locationParts.push(location.city);
+        if (location.port) locationParts.push(location.port);
+        if (location.country) locationParts.push(location.country);
+        
+        return locationParts.length > 0 ? locationParts.join(', ') : 'Location not specified';
+      }
+      
+      return 'Location not specified';
     }
 
     function updateEditPositions() {
@@ -200,20 +252,34 @@
     async function loadJobs() {
       const token = localStorage.getItem('token');
       if (!token) {
+        console.log('No token found, redirecting to login');
         window.location.href = '/login.html';
         return;
       }
 
+      console.log('Loading jobs with token:', token.substring(0, 20) + '...');
+
       try {
         const res = await fetch('/api/v1/jobs/posted', {
-          headers: { 'Authorization': 'Bearer ' + token }
+          headers: { 
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          }
         });
         
+        console.log('Response status:', res.status);
+        console.log('Response headers:', res.headers);
+        
         if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
+          const errorText = await res.text();
+          console.error('HTTP Error:', res.status, errorText);
+          throw new Error(`HTTP ${res.status}: ${errorText}`);
         }
         
         const jobs = await res.json();
+        console.log('Jobs loaded:', jobs.length, 'jobs');
+        console.log('Jobs data:', jobs);
+        
         allJobs = jobs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         
         updateStats();
@@ -222,7 +288,10 @@
         console.error('Error loading jobs:', error);
         document.getElementById('jobsList').innerHTML = `
           <div class="message message-error">
-            Error loading jobs: ${error.message}. Please try again later.
+            <h4>Error loading jobs</h4>
+            <p>${error.message}</p>
+            <p>Please check your connection and try again.</p>
+            <button class="btn btn-outline" onclick="loadJobs()">Retry</button>
           </div>
         `;
       }
@@ -264,7 +333,7 @@
                 <span class="job-tag job-category">${job.jobCategory}</span>
                 <span class="job-tag job-position">${job.position}</span>
                 <span class="job-tag job-type">${job.jobType}</span>
-                <span class="job-tag job-location">${job.location}</span>
+                <span class="job-tag job-location">${formatLocation(job.location)}</span>
                 <span class="job-tag job-salary">${job.salary}</span>
               </div>
               <div class="job-date">Posted: ${formatDate(job.createdAt)}</div>
@@ -279,12 +348,14 @@
               <div style="margin-top: 8px; font-size: 12px; color: var(--text-light);">
                 ${job.applications ? job.applications.length : 0} applications
               </div>
-              <div style="margin-top: 8px;">
-                <button class="btn btn-outline" onclick="editJob('${job._id}')" style="margin-right: 8px;">Edit</button>
-                <button class="btn btn-outline" onclick="toggleJobStatus('${job._id}', '${job.status}')">
+              <div class="job-actions" style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start;">
+                <button class="btn btn-outline btn-sm" onclick="editJob('${job._id}')" style="width: 100%; min-width: 80px;">
+                  Edit
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="toggleJobStatus('${job._id}', '${job.status}')" style="width: 100%; min-width: 80px;">
                   ${job.status === 'active' ? 'Close' : 'Reopen'}
                 </button>
-                <button class="btn btn-outline" onclick="deleteJob('${job._id}')" style="margin-left: 8px; color: var(--danger-color);">
+                <button class="btn btn-outline btn-sm" onclick="deleteJob('${job._id}')" style="width: 100%; min-width: 80px; color: #dc3545; border-color: #dc3545;">
                   Delete
                 </button>
               </div>
@@ -298,6 +369,10 @@
       const statusFilter = document.getElementById('statusFilter').value;
       const categoryFilter = document.getElementById('categoryFilter').value;
       const positionFilter = document.getElementById('positionFilter').value;
+      const countryFilter = document.getElementById('countryFilter').value;
+      const cityFilter = document.getElementById('cityFilter').value;
+      const portFilter = document.getElementById('portFilter').value;
+      const customPortInput = document.getElementById('customPortInput');
       
       let filteredJobs = allJobs;
       
@@ -313,6 +388,51 @@
         filteredJobs = filteredJobs.filter(job => job.position === positionFilter);
       }
       
+      // Location filtering
+      if (countryFilter) {
+        filteredJobs = filteredJobs.filter(job => {
+          // Handle both old string format and new object format
+          if (typeof job.location === 'string') {
+            return job.location.toLowerCase().includes(countryFilter.toLowerCase());
+          } else if (job.location && job.location.country) {
+            return job.location.country.toLowerCase().includes(countryFilter.toLowerCase());
+          }
+          return false;
+        });
+      }
+      
+      if (cityFilter) {
+        filteredJobs = filteredJobs.filter(job => {
+          if (typeof job.location === 'string') {
+            return job.location.toLowerCase().includes(cityFilter.toLowerCase());
+          } else if (job.location && job.location.city) {
+            return job.location.city.toLowerCase().includes(cityFilter.toLowerCase());
+          }
+          return false;
+        });
+      }
+      
+      if (portFilter && portFilter !== 'custom') {
+        filteredJobs = filteredJobs.filter(job => {
+          if (typeof job.location === 'string') {
+            return job.location.toLowerCase().includes(portFilter.toLowerCase());
+          } else if (job.location && job.location.port) {
+            return job.location.port.toLowerCase().includes(portFilter.toLowerCase());
+          }
+          return false;
+        });
+      } else if (portFilter === 'custom' && customPortInput.value.trim()) {
+        const customPort = customPortInput.value.trim().toLowerCase();
+        filteredJobs = filteredJobs.filter(job => {
+          if (typeof job.location === 'string') {
+            return job.location.toLowerCase().includes(customPort);
+          } else if (job.location && job.location.port) {
+            return job.location.port.toLowerCase().includes(customPort);
+          }
+          return false;
+        });
+      }
+      
       displayJobs(filteredJobs);
     }
 
@@ -320,10 +440,132 @@
       document.getElementById('statusFilter').value = '';
       document.getElementById('categoryFilter').value = '';
       document.getElementById('positionFilter').value = '';
+      document.getElementById('countryFilter').value = '';
+      document.getElementById('cityFilter').value = '';
+      document.getElementById('portFilter').value = '';
+      document.getElementById('customPortInput').value = '';
+      document.getElementById('customPortInput').style.display = 'none';
       displayJobs(allJobs);
     }
 
-    function editJob(jobId) {
+    // Location filtering functions
+    async function loadFilterCountries() {
+      try {
+        console.log('Loading filter countries...');
+        const response = await fetch('/api/v1/locations/countries');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: Failed to load countries`);
+        }
+        
+        const countries = await response.json();
+        console.log('Filter countries loaded:', countries.length);
+        
+        const countrySelect = document.getElementById('countryFilter');
+        countrySelect.innerHTML = '<option value="">All Countries</option>';
+        
+        countries.forEach(country => {
+          countrySelect.innerHTML += `<option value="${country}">${country}</option>`;
+        });
+      } catch (error) {
+        console.error('Error loading filter countries:', error);
+        // Don't show error to user for filter loading, just log it
+      }
+    }
+
+    async function loadFilterCities() {
+      const country = document.getElementById('countryFilter').value;
+      const citySelect = document.getElementById('cityFilter');
+      const portSelect = document.getElementById('portFilter');
+      
+      // Reset city and port filters
+      citySelect.innerHTML = '<option value="">All Cities</option>';
+      portSelect.innerHTML = '<option value="">All Ports</option>';
+      document.getElementById('customPortInput').style.display = 'none';
+      document.getElementById('customPortInput').value = '';
+      
+      if (!country) {
+        filterJobs();
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/v1/locations/cities/${encodeURIComponent(country)}`);
+        const cities = await response.json();
+        
+        cities.forEach(city => {
+          citySelect.innerHTML += `<option value="${city}">${city}</option>`;
+        });
+        
+        filterJobs();
+      } catch (error) {
+        console.error('Error loading cities:', error);
+        filterJobs();
+      }
+    }
+
+    async function loadFilterPorts() {
+      const country = document.getElementById('countryFilter').value;
+      const city = document.getElementById('cityFilter').value;
+      const portSelect = document.getElementById('portFilter');
+      
+      // Reset port filter
+      portSelect.innerHTML = '<option value="">All Ports</option>';
+      portSelect.innerHTML += '<option value="custom">➕ Add Custom Port</option>';
+      document.getElementById('customPortInput').style.display = 'none';
+      document.getElementById('customPortInput').value = '';
+      
+      if (!country || !city) {
+        filterJobs();
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/v1/locations/ports/${encodeURIComponent(country)}/${encodeURIComponent(city)}`);
+        const ports = await response.json();
+        
+        ports.forEach(port => {
+          portSelect.innerHTML += `<option value="${port}">${port}</option>`;
+        });
+        
+        filterJobs();
+      } catch (error) {
+        console.error('Error loading ports:', error);
+        filterJobs();
+      }
+    }
+
+    function handlePortSelection() {
+      const portFilter = document.getElementById('portFilter');
+      const customPortInput = document.getElementById('customPortInput');
+      
+      if (portFilter.value === 'custom') {
+        customPortInput.style.display = 'block';
+        customPortInput.focus();
+      } else {
+        customPortInput.style.display = 'none';
+        customPortInput.value = '';
+      }
+      
+      filterJobs();
+    }
+
+    function handleCustomPortInput() {
+      const portFilter = document.getElementById('portFilter');
+      const customPortInput = document.getElementById('customPortInput');
+      
+      if (portFilter.value === 'custom') {
+        // Update the custom option text to show what user is typing
+        const customOption = portFilter.querySelector('option[value="custom"]');
+        if (customOption) {
+          customOption.textContent = customPortInput.value ? `➕ ${customPortInput.value}` : '➕ Add Custom Port';
+        }
+      }
+      
+      filterJobs();
+    }
+
+    async function editJob(jobId) {
       const job = allJobs.find(j => j._id === jobId);
       if (!job) return;
       
@@ -332,7 +574,75 @@
       // Populate form
       document.getElementById('editTitle').value = job.title;
       document.getElementById('editCompany').value = job.company;
-      document.getElementById('editLocation').value = job.location;
+      
+      // Handle location - populate dropdowns with current location data
+      if (job.location && typeof job.location === 'object') {
+        // Set country
+        const countrySelect = document.getElementById('editCountry');
+        countrySelect.value = job.location.country || '';
+        
+        // Load cities for the selected country
+        if (job.location.country) {
+          await loadEditCities();
+          
+          // Set city
+          const citySelect = document.getElementById('editCity');
+          citySelect.value = job.location.city || '';
+          
+          // Load ports for the selected city
+          if (job.location.city) {
+            await loadEditPorts();
+            
+            // Set port
+            const portSelect = document.getElementById('editPort');
+            if (job.location.port) {
+              // Check if the port exists in the dropdown
+              const portExists = Array.from(portSelect.options).some(option => option.value === job.location.port);
+              if (portExists) {
+                portSelect.value = job.location.port;
+              } else {
+                // If port doesn't exist, set to custom and populate custom input
+                portSelect.value = 'custom';
+                document.getElementById('editCustomPort').value = job.location.port;
+                document.getElementById('editCustomPort').style.display = 'block';
+              }
+            }
+          }
+        }
+      } else if (typeof job.location === 'string') {
+        // For old string format, try to parse it
+        const locationParts = job.location.split(', ').map(part => part.trim());
+        if (locationParts.length >= 2) {
+          const countrySelect = document.getElementById('editCountry');
+          countrySelect.value = locationParts[locationParts.length - 1] || '';
+          
+          if (locationParts[locationParts.length - 1]) {
+            await loadEditCities();
+            const citySelect = document.getElementById('editCity');
+            citySelect.value = locationParts[0] || '';
+            
+            if (locationParts[0]) {
+              await loadEditPorts();
+              if (locationParts.length > 2) {
+                const portSelect = document.getElementById('editPort');
+                const portValue = locationParts[1];
+                const portExists = Array.from(portSelect.options).some(option => option.value === portValue);
+                if (portExists) {
+                  portSelect.value = portValue;
+                } else {
+                  portSelect.value = 'custom';
+                  document.getElementById('editCustomPort').value = portValue;
+                  document.getElementById('editCustomPort').style.display = 'block';
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      // Update the location display
+      updateEditLocationDisplay();
+      
       document.getElementById('editJobCategory').value = job.jobCategory;
       document.getElementById('editJobType').value = job.jobType;
       document.getElementById('editSalary').value = job.salary;
@@ -357,10 +667,29 @@
       if (!currentEditJob) return;
       
       const token = localStorage.getItem('token');
+      // Handle location data
+      const country = document.getElementById('editCountry').value;
+      const city = document.getElementById('editCity').value;
+      const port = document.getElementById('editPort').value;
+      const customPort = document.getElementById('editCustomPort').value.trim();
+      const locationDisplay = document.getElementById('editLocationDisplay').value;
+      
+      let finalPort = '';
+      if (port === 'custom' && customPort) {
+        finalPort = customPort;
+      } else if (port && port !== 'custom') {
+        finalPort = port;
+      }
+
       const formData = {
         title: document.getElementById('editTitle').value,
         company: document.getElementById('editCompany').value,
-        location: document.getElementById('editLocation').value,
+        location: {
+          country: country,
+          city: city,
+          port: finalPort,
+          displayName: locationDisplay
+        },
         jobCategory: document.getElementById('editJobCategory').value,
         position: document.getElementById('editPosition').value,
         jobType: document.getElementById('editJobType').value,
@@ -462,8 +791,239 @@
       }
     }
 
-    // Load jobs when page loads
-    document.addEventListener('DOMContentLoaded', loadJobs);
+    // Edit modal location handling functions
+    async function loadEditCountries() {
+      try {
+        console.log('Loading edit countries...');
+        const response = await fetch('/api/v1/locations/countries');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: Failed to load countries`);
+        }
+        
+        const countries = await response.json();
+        console.log('Edit countries loaded:', countries.length);
+        
+        const countrySelect = document.getElementById('editCountry');
+        countrySelect.innerHTML = '<option value="">Select Country</option>';
+        
+        countries.forEach(country => {
+          const option = document.createElement('option');
+          option.value = country;
+          option.textContent = country;
+          countrySelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Error loading edit countries:', error);
+        // Show error in modal
+        const countrySelect = document.getElementById('editCountry');
+        countrySelect.innerHTML = '<option value="">Error loading countries</option>';
+      }
+    }
+
+    async function loadEditCities() {
+      const countrySelect = document.getElementById('editCountry');
+      const citySelect = document.getElementById('editCity');
+      const portSelect = document.getElementById('editPort');
+      
+      const country = countrySelect.value;
+      
+      // Reset city and port
+      citySelect.innerHTML = '<option value="">Select City</option>';
+      portSelect.innerHTML = '<option value="">Select Port (Optional)</option>';
+      
+      if (!country) {
+        citySelect.disabled = true;
+        portSelect.disabled = true;
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/v1/locations/cities/${encodeURIComponent(country)}`);
+        const cities = await response.json();
+        
+        citySelect.disabled = false;
+        
+        cities.forEach(city => {
+          const option = document.createElement('option');
+          option.value = city;
+          option.textContent = city;
+          citySelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Error loading cities:', error);
+      }
+    }
+
+    async function loadEditPorts() {
+      const countrySelect = document.getElementById('editCountry');
+      const citySelect = document.getElementById('editCity');
+      const portSelect = document.getElementById('editPort');
+      const customPortInput = document.getElementById('editCustomPort');
+      
+      const country = countrySelect.value;
+      const city = citySelect.value;
+      
+      // Reset port and custom input
+      portSelect.innerHTML = '<option value="">Select Port (Optional)</option>';
+      customPortInput.style.display = 'none';
+      customPortInput.value = '';
+      
+      if (!country || !city) {
+        portSelect.disabled = true;
+        customPortInput.style.display = 'none';
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/v1/locations/ports/${encodeURIComponent(country)}/${encodeURIComponent(city)}`);
+        const ports = await response.json();
+        
+        portSelect.disabled = false;
+        
+        if (ports.length > 0) {
+          ports.forEach(port => {
+            const option = document.createElement('option');
+            option.value = port;
+            option.textContent = port;
+            portSelect.appendChild(option);
+          });
+        }
+        
+        // Add "Add Custom Port" option
+        const customOption = document.createElement('option');
+        customOption.value = 'custom';
+        customOption.textContent = '➕ Add Custom Port';
+        portSelect.appendChild(customOption);
+      } catch (error) {
+        console.error('Error loading ports:', error);
+      }
+      
+      updateEditLocationDisplay();
+    }
+
+    function handleEditPortSelection() {
+      const portSelect = document.getElementById('editPort');
+      const customPortInput = document.getElementById('editCustomPort');
+      
+      if (portSelect.value === 'custom') {
+        // Show custom port input
+        customPortInput.style.display = 'block';
+        customPortInput.focus();
+        customPortInput.value = '';
+      } else {
+        // Hide custom port input and update display
+        customPortInput.style.display = 'none';
+        customPortInput.value = '';
+        updateEditLocationDisplay();
+      }
+    }
+
+    function handleEditCustomPortInput() {
+      const customPortInput = document.getElementById('editCustomPort');
+      const portName = customPortInput.value.trim();
+      
+      if (portName.length > 0) {
+        // Update the port select to show the custom port name
+        const portSelect = document.getElementById('editPort');
+        const customOption = portSelect.querySelector('option[value="custom"]');
+        if (customOption) {
+          customOption.textContent = `➕ Add Custom Port (${portName})`;
+        }
+        
+        // Update location display
+        updateEditLocationDisplay();
+      }
+    }
+
+    function updateEditLocationDisplay() {
+      const countrySelect = document.getElementById('editCountry');
+      const citySelect = document.getElementById('editCity');
+      const portSelect = document.getElementById('editPort');
+      const customPortInput = document.getElementById('editCustomPort');
+      const displayInput = document.getElementById('editLocationDisplay');
+      
+      const country = countrySelect.value;
+      const city = citySelect.value;
+      const port = portSelect.value;
+      const customPort = customPortInput.value.trim();
+      
+      let displayText = '';
+      if (city && country) {
+        displayText = city;
+        
+        // Handle custom port input
+        if (port === 'custom' && customPort) {
+          displayText += `, ${customPort}`;
+        } else if (port && port !== 'custom') {
+          displayText += `, ${port}`;
+        }
+        
+        displayText += `, ${country}`;
+      }
+      
+      displayInput.value = displayText;
+    }
+
+    // Mobile menu toggle function
+    function toggleMobileMenu() {
+      const navLinks = document.getElementById('navLinks');
+      navLinks.classList.toggle('show');
+    }
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(event) {
+      const navLinks = document.getElementById('navLinks');
+      const mobileToggle = document.querySelector('.mobile-menu-toggle');
+      
+      if (!navLinks.contains(event.target) && !mobileToggle.contains(event.target)) {
+        navLinks.classList.remove('show');
+      }
+    });
+
+    // Load jobs and countries when page loads
+    document.addEventListener('DOMContentLoaded', async function() {
+      console.log('Page loaded, initializing...');
+      
+      try {
+        // Show loading state
+        document.getElementById('jobsList').innerHTML = `
+          <div class="loading">
+            <div class="spinner"></div>
+            Loading jobs...
+          </div>
+        `;
+        
+        // Load data in parallel
+        await Promise.all([
+          loadJobs(),
+          loadFilterCountries(),
+          loadEditCountries()
+        ]);
+        
+        console.log('Page initialization complete');
+      } catch (error) {
+        console.error('Error during page initialization:', error);
+        document.getElementById('jobsList').innerHTML = `
+          <div class="message message-error">
+            <h4>Error initializing page</h4>
+            <p>${error.message}</p>
+            <button class="btn btn-outline" onclick="location.reload()">Reload Page</button>
+          </div>
+        `;
+      }
+      
+      // Add event listeners for edit modal location dropdowns
+      const editCountry = document.getElementById('editCountry');
+      const editCity = document.getElementById('editCity');
+      const editPort = document.getElementById('editPort');
+      const editCustomPort = document.getElementById('editCustomPort');
+      
+      if (editCountry) editCountry.addEventListener('change', updateEditLocationDisplay);
+      if (editCity) editCity.addEventListener('change', updateEditLocationDisplay);
+      if (editPort) editPort.addEventListener('change', updateEditLocationDisplay);
+      if (editCustomPort) editCustomPort.addEventListener('input', updateEditLocationDisplay);
+    });
   </script>
 </body>
 </html> 

@@ -162,9 +162,14 @@ document.addEventListener('DOMContentLoaded', async function() {
                 <option value="accepted" ${app.status === 'accepted' ? 'selected' : ''}>Accepted</option>
                 <option value="rejected" ${app.status === 'rejected' ? 'selected' : ''}>Rejected</option>
               </select>
+              ${app.status === 'rejected' ? `
+                <button onclick="deleteApplication('${app._id}')" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; margin-top: 4px; cursor: pointer;">
+                  🗑️ Delete
+                </button>
+              ` : ''}
             </div>
           </div>
-          ${app.resume ? `<b>Resume:</b> <a href="/uploads/${app.resume.filename}" target="_blank" download="${app.resume.originalName || 'resume'}">Download Resume (${app.resume.originalName || 'resume'})</a><br>` : ''}
+                       ${app.resume ? `<b>Resume:</b> <a href="#" onclick="handleResumeDownload(event, '${app._id}')">Download Resume (${app.resume.originalName || 'resume'})</a>${app.resume.filename && !app.resume.data ? ' ⚠️ (Old format)' : ''}<br>` : ''}
           ${app.coverLetter ? `<b>Cover Letter:</b> <pre style="white-space:pre-wrap;background:#f4f4f4;padding:0.5em;border-radius:4px;">${app.coverLetter}</pre>` : ''}
         </div>
       `).join('');
@@ -213,9 +218,14 @@ document.addEventListener('DOMContentLoaded', async function() {
                   <option value="accepted" ${app.status === 'accepted' ? 'selected' : ''}>Accepted</option>
                   <option value="rejected" ${app.status === 'rejected' ? 'selected' : ''}>Rejected</option>
                 </select>
+                ${app.status === 'rejected' ? `
+                  <button onclick="deleteApplication('${app._id}')" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; margin-top: 4px; cursor: pointer;">
+                    🗑️ Delete
+                  </button>
+                ` : ''}
               </div>
             </div>
-            ${app.resume ? `<b>Resume:</b> <a href="/uploads/${app.resume.filename}" target="_blank" download="${app.resume.originalName || 'resume'}">Download Resume (${app.resume.originalName || 'resume'})</a><br>` : ''}
+            ${app.resume ? `<b>Resume:</b> <a href="#" onclick="handleResumeDownload(event, '${app._id}')">Download Resume (${app.resume.originalName || 'resume'})</a>${app.resume.filename && !app.resume.data ? ' ⚠️ (Old format)' : ''}<br>` : ''}
             ${app.coverLetter ? `<b>Cover Letter:</b> <pre style="white-space:pre-wrap;background:#f4f4f4;padding:0.5em;border-radius:4px;">${app.coverLetter}</pre>` : ''}
           </div>
         `).join('');
@@ -249,6 +259,81 @@ document.addEventListener('DOMContentLoaded', async function() {
       }
     } catch (error) {
       alert('Error updating application status');
+    }
+  };
+
+  // Function to handle resume download with error handling
+  window.handleResumeDownload = async function(event, applicationId) {
+    
+    // Prevent the default link behavior
+    event.preventDefault();
+    
+    try {
+      const response = await fetch(`/api/v1/jobs/applications/${applicationId}/resume`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        
+        if (errorData.code === 'OLD_FORMAT') {
+          alert(`⚠️ ${errorData.message}`);
+        } else {
+          alert(`Resume not available: ${errorData.message}`);
+        }
+        return false;
+      }
+      
+      // Get the blob from the response
+      const blob = await response.blob();
+      
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `resume_${applicationId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      alert('Resume downloaded successfully!');
+      return true;
+    } catch (error) {
+      console.error('Error downloading resume:', error);
+      alert('Error downloading resume');
+      return false;
+    }
+  };
+
+  // Function to delete application
+  window.deleteApplication = async function(applicationId) {
+    if (!confirm('Are you sure you want to delete this rejected application? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/v1/jobs/applications/${applicationId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      });
+      
+      if (res.ok) {
+        // Refresh the applications view
+        const activeTab = document.querySelector('.nav-tab.active');
+        if (activeTab.textContent.includes('Applications')) {
+          loadAllApplications();
+        }
+        alert('Application deleted successfully');
+      } else {
+        const errorData = await res.json();
+        alert(`Failed to delete application: ${errorData.message}`);
+      }
+    } catch (error) {
+      alert('Error deleting application');
     }
   };
 

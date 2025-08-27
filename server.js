@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
+import locationRoutes from './routes/locationRoutes.js';
 import testRoutes from './routes/testRoutes.js';
 import multer from 'multer';
 import {
@@ -90,6 +91,7 @@ app.locals.upload = upload;
 app.use('/api/v1/test', testRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/jobs', jobRoutes);
+app.use('/api/v1/locations', locationRoutes);
 
 // Error handling middleware
 app.use(securityErrorHandler);

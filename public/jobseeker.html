@@ -13,7 +13,8 @@
         <span class="logo-icon">🔗</span>
         <span>Yacht Crew Portal</span>
       </a>
-      <nav class="nav-links">
+      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+      <nav class="nav-links" id="navLinks">
         <a href="/jobseeker.html" class="nav-link active">Dashboard</a>
         <a href="/jobseeker-jobs.html" class="nav-link">Browse Jobs</a>
         <a href="/jobseeker-applications.html" class="nav-link">My Applications</a>
@@ -109,6 +110,32 @@
       });
     }
 
+    // Helper function to format location display
+    function formatLocation(location) {
+      if (!location) return 'Location not specified';
+      
+      // If location is a string (old format), return as is
+      if (typeof location === 'string') {
+        return location;
+      }
+      
+      // If location is an object (new format), format it properly
+      if (typeof location === 'object') {
+        if (location.displayName) {
+          return location.displayName;
+        }
+        
+        let locationParts = [];
+        if (location.city) locationParts.push(location.city);
+        if (location.port) locationParts.push(location.port);
+        if (location.country) locationParts.push(location.country);
+        
+        return locationParts.length > 0 ? locationParts.join(', ') : 'Location not specified';
+      }
+      
+      return 'Location not specified';
+    }
+
     async function loadDashboardData() {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -170,7 +197,7 @@
                   <span class="job-tag job-category">${job.jobCategory}</span>
                   <span class="job-tag job-position">${job.position}</span>
                   <span class="job-tag job-type">${job.jobType}</span>
-                  <span class="job-tag job-location">${job.location}</span>
+                  <span class="job-tag job-location">${formatLocation(job.location)}</span>
                   <span class="job-tag job-salary">${job.salary}</span>
                 </div>
                 <div class="job-date">Applied: ${formatDate(job.appliedAt)}</div>
@@ -191,6 +218,22 @@
         `;
       }
     }
+
+    // Mobile menu toggle function
+    function toggleMobileMenu() {
+      const navLinks = document.getElementById('navLinks');
+      navLinks.classList.toggle('show');
+    }
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(event) {
+      const navLinks = document.getElementById('navLinks');
+      const mobileToggle = document.querySelector('.mobile-menu-toggle');
+      
+      if (!navLinks.contains(event.target) && !mobileToggle.contains(event.target)) {
+        navLinks.classList.remove('show');
+      }
+    });
 
     // Load dashboard data when page loads
     document.addEventListener('DOMContentLoaded', loadDashboardData);

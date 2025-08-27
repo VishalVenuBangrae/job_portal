@@ -13,7 +13,8 @@
         <span class="logo-icon">🔗</span>
         <span>Yacht Crew Portal</span>
       </a>
-      <nav class="nav-links">
+      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+      <nav class="nav-links" id="navLinks">
         <a href="/employer.html" class="nav-link">Dashboard</a>
         <a href="/post-job.html" class="nav-link active">Post Job</a>
         <a href="/employer-applications.html" class="nav-link">Applications</a>
@@ -42,7 +43,19 @@
             </div>
             <div class="form-group">
               <label class="form-label">Location *</label>
-              <input type="text" name="location" class="form-input" required placeholder="e.g., Monaco, Miami, Antibes">
+              <div class="location-selector">
+                <select name="country" class="form-select" required onchange="loadCities()">
+                  <option value="">Select Country</option>
+                </select>
+                <select name="city" class="form-select" required onchange="loadPorts()" disabled>
+                  <option value="">Select City</option>
+                </select>
+                <select name="port" class="form-select" onchange="handlePortSelection()">
+                  <option value="">Select Port (Optional)</option>
+                </select>
+                <input type="text" name="customPort" class="form-input" placeholder="Or type custom port name..." style="display: none;" onkeyup="handleCustomPortInput()">
+                <input type="text" name="locationDisplay" class="form-input" readonly placeholder="Location will be displayed here">
+              </div>
             </div>
           </div>
           
@@ -115,6 +128,170 @@
       window.location.href = '/login.html';
     }
 
+    // Location handling functions
+    async function loadCountries() {
+      try {
+        const response = await fetch('/api/v1/locations/countries');
+        const countries = await response.json();
+        
+        const countrySelect = document.querySelector('select[name="country"]');
+        countrySelect.innerHTML = '<option value="">Select Country</option>';
+        
+        countries.forEach(country => {
+          const option = document.createElement('option');
+          option.value = country;
+          option.textContent = country;
+          countrySelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Error loading countries:', error);
+      }
+    }
+
+    async function loadCities() {
+      const countrySelect = document.querySelector('select[name="country"]');
+      const citySelect = document.querySelector('select[name="city"]');
+      const portSelect = document.querySelector('select[name="port"]');
+      
+      const country = countrySelect.value;
+      
+      // Reset city and port
+      citySelect.innerHTML = '<option value="">Select City</option>';
+      portSelect.innerHTML = '<option value="">Select Port (Optional)</option>';
+      
+      if (!country) {
+        citySelect.disabled = true;
+        portSelect.disabled = true;
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/v1/locations/cities/${encodeURIComponent(country)}`);
+        const cities = await response.json();
+        
+        citySelect.disabled = false;
+        
+        cities.forEach(city => {
+          const option = document.createElement('option');
+          option.value = city;
+          option.textContent = city;
+          citySelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Error loading cities:', error);
+      }
+    }
+
+    async function loadPorts() {
+      const countrySelect = document.querySelector('select[name="country"]');
+      const citySelect = document.querySelector('select[name="city"]');
+      const portSelect = document.querySelector('select[name="port"]');
+      const customPortInput = document.querySelector('input[name="customPort"]');
+      
+      const country = countrySelect.value;
+      const city = citySelect.value;
+      
+      // Reset port and custom input
+      portSelect.innerHTML = '<option value="">Select Port (Optional)</option>';
+      customPortInput.style.display = 'none';
+      customPortInput.value = '';
+      
+      if (!country || !city) {
+        portSelect.disabled = true;
+        customPortInput.style.display = 'none';
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/v1/locations/ports/${encodeURIComponent(country)}/${encodeURIComponent(city)}`);
+        const ports = await response.json();
+        
+        portSelect.disabled = false;
+        
+        if (ports.length > 0) {
+          ports.forEach(port => {
+            const option = document.createElement('option');
+            option.value = port;
+            option.textContent = port;
+            portSelect.appendChild(option);
+          });
+        }
+        
+        // Add "Add Custom Port" option
+        const customOption = document.createElement('option');
+        customOption.value = 'custom';
+        customOption.textContent = '➕ Add Custom Port';
+        portSelect.appendChild(customOption);
+      } catch (error) {
+        console.error('Error loading ports:', error);
+      }
+      
+      updateLocationDisplay();
+    }
+
+    function handlePortSelection() {
+      const portSelect = document.querySelector('select[name="port"]');
+      const customPortInput = document.querySelector('input[name="customPort"]');
+      
+      if (portSelect.value === 'custom') {
+        // Show custom port input
+        customPortInput.style.display = 'block';
+        customPortInput.focus();
+        customPortInput.value = '';
+      } else {
+        // Hide custom port input and update display
+        customPortInput.style.display = 'none';
+        customPortInput.value = '';
+        updateLocationDisplay();
+      }
+    }
+
+    function handleCustomPortInput() {
+      const customPortInput = document.querySelector('input[name="customPort"]');
+      const portName = customPortInput.value.trim();
+      
+      if (portName.length > 0) {
+        // Update the port select to show the custom port name
+        const portSelect = document.querySelector('select[name="port"]');
+        const customOption = portSelect.querySelector('option[value="custom"]');
+        if (customOption) {
+          customOption.textContent = `➕ Add Custom Port (${portName})`;
+        }
+        
+        // Update location display
+        updateLocationDisplay();
+      }
+    }
+
+    function updateLocationDisplay() {
+      const countrySelect = document.querySelector('select[name="country"]');
+      const citySelect = document.querySelector('select[name="city"]');
+      const portSelect = document.querySelector('select[name="port"]');
+      const customPortInput = document.querySelector('input[name="customPort"]');
+      const displayInput = document.querySelector('input[name="locationDisplay"]');
+      
+      const country = countrySelect.value;
+      const city = citySelect.value;
+      const port = portSelect.value;
+      const customPort = customPortInput.value.trim();
+      
+      let displayText = '';
+      if (city && country) {
+        displayText = city;
+        
+        // Handle custom port input
+        if (port === 'custom' && customPort) {
+          displayText += `, ${customPort}`;
+        } else if (port && port !== 'custom') {
+          displayText += `, ${port}`;
+        }
+        
+        displayText += `, ${country}`;
+      }
+      
+      displayInput.value = displayText;
+    }
+
     function updatePositionOptions() {
       const categorySelect = document.querySelector('select[name="jobCategory"]');
       const positionSelect = document.getElementById('positionSelect');
@@ -156,6 +333,25 @@
       const errorDiv = document.getElementById('formError');
       const successDiv = document.getElementById('formSuccess');
 
+      // Mobile menu toggle function
+      function toggleMobileMenu() {
+        const navLinks = document.getElementById('navLinks');
+        navLinks.classList.toggle('show');
+      }
+
+      // Close mobile menu when clicking outside
+      document.addEventListener('click', function(event) {
+        const navLinks = document.getElementById('navLinks');
+        const mobileToggle = document.querySelector('.mobile-menu-toggle');
+        
+        if (!navLinks.contains(event.target) && !mobileToggle.contains(event.target)) {
+          navLinks.classList.remove('show');
+        }
+      });
+
+      // Load countries when page loads
+      loadCountries();
+
       if (postJobForm) {
         postJobForm.addEventListener('submit', async function(e) {
           e.preventDefault();
@@ -169,10 +365,26 @@
           submitBtn.innerHTML = '<div class="spinner"></div> Posting Job...';
 
           const formData = new FormData(this);
+          // Handle custom port
+          const port = formData.get('port');
+          const customPort = formData.get('customPort');
+          let finalPort = '';
+          
+          if (port === 'custom' && customPort.trim()) {
+            finalPort = customPort.trim();
+          } else if (port && port !== 'custom') {
+            finalPort = port;
+          }
+
           const jobData = {
             title: formData.get('title'),
             company: formData.get('company'),
-            location: formData.get('location'),
+            location: {
+              country: formData.get('country'),
+              city: formData.get('city'),
+              port: finalPort,
+              displayName: formData.get('locationDisplay')
+            },
             jobCategory: formData.get('jobCategory'),
             position: formData.get('position'),
             description: formData.get('description'),

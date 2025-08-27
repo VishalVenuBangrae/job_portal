@@ -12,9 +12,41 @@ const jobSchema = new mongoose.Schema({
         trim: true
     },
     location: {
-        type: String,
-        required: [true, 'Please provide a job location'],
-        trim: true
+        country: {
+            type: String,
+            required: [true, 'Please provide a country'],
+            trim: true
+        },
+        city: {
+            type: String,
+            required: [true, 'Please provide a city'],
+            trim: true
+        },
+        port: {
+            type: String,
+            trim: true
+        },
+        region: {
+            type: String,
+            trim: true
+        },
+        coordinates: {
+            latitude: {
+                type: Number,
+                min: -90,
+                max: 90
+            },
+            longitude: {
+                type: Number,
+                min: -180,
+                max: 180
+            }
+        },
+        displayName: {
+            type: String,
+            required: [true, 'Please provide a location display name'],
+            trim: true
+        }
     },
     description: {
         type: String,
@@ -66,10 +98,18 @@ const jobSchema = new mongoose.Schema({
             type: String
         },
         resume: {
-            filename: String,
-            originalName: String,
-            path: String,
-            mimetype: String
+            data: {
+                type: Buffer,
+                required: true
+            },
+            originalName: {
+                type: String,
+                required: true
+            },
+            mimetype: {
+                type: String,
+                required: true
+            }
         },
         coverLetter: {
             type: String

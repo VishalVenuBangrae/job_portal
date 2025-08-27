@@ -9,7 +9,9 @@ import {
   getAppliedJobs,
   getPostedJobs,
   getJobApplications,
-  updateApplicationStatus
+  updateApplicationStatus,
+  getResumeFile,
+  deleteApplication
 } from '../controllers/jobController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { employerOnly, jobseekerOnly, jobOwnerOnly } from '../middleware/roleMiddleware.js';
@@ -29,6 +31,9 @@ router.get('/applied', protect, jobseekerOnly, getAppliedJobs);
 // Update application status (employer only)
 router.put('/applications/:applicationId/status', protect, employerOnly, updateApplicationStatus);
 
+// Delete application (employer only - only rejected applications)
+router.delete('/applications/:applicationId', protect, employerOnly, deleteApplication);
+
 // Protected (jobseeker) - with file upload
 router.post('/:id/apply', protect, jobseekerOnly, (req, res, next) => {
   // Get upload middleware from app.locals
@@ -43,6 +48,9 @@ router.post('/:id/apply', protect, jobseekerOnly, (req, res, next) => {
 
 // View applications for a job (employer, owner only)
 router.get('/:id/applications', protect, employerOnly, jobOwnerOnly, getJobApplications);
+
+// Serve resume file (protected - only job owner can access)
+router.get('/applications/:applicationId/resume', protect, employerOnly, getResumeFile);
 
 // Job CRUD operations (employer only)
 router.get('/:id', getJobById);

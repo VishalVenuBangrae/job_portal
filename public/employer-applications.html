@@ -13,7 +13,8 @@
         <span class="logo-icon">🔗</span>
         <span>Yacht Crew Portal</span>
       </a>
-      <nav class="nav-links">
+      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+      <nav class="nav-links" id="navLinks">
         <a href="/employer.html" class="nav-link">Dashboard</a>
         <a href="/post-job.html" class="nav-link">Post Job</a>
         <a href="/employer-applications.html" class="nav-link active">Applications</a>
@@ -71,6 +72,21 @@
           <option value="Stewardess">Stewardess</option>
         </select>
         <input type="text" id="searchFilter" class="filter-input" placeholder="Search by name or email..." onkeyup="filterApplications()">
+      </div>
+      
+      <div class="filter-row">
+        <div class="location-selector">
+          <select id="countryFilter" class="filter-select" onchange="loadFilterCities()">
+            <option value="">All Countries</option>
+          </select>
+          <select id="cityFilter" class="filter-select" onchange="loadFilterPorts()">
+            <option value="">All Cities</option>
+          </select>
+          <select id="portFilter" class="filter-select" onchange="handlePortSelection()">
+            <option value="">All Ports</option>
+          </select>
+          <input type="text" id="customPortInput" class="form-input" placeholder="Type custom port name..." style="display: none;" onkeyup="handleCustomPortInput()">
+        </div>
         <button class="btn btn-outline" onclick="clearFilters()">Clear Filters</button>
       </div>
     </div>
@@ -97,10 +113,34 @@
       return date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+        day: 'numeric'
       });
+    }
+
+    // Helper function to format location display
+    function formatLocation(location) {
+      if (!location) return 'Location not specified';
+      
+      // If location is a string (old format), return as is
+      if (typeof location === 'string') {
+        return location;
+      }
+      
+      // If location is an object (new format), format it properly
+      if (typeof location === 'object') {
+        if (location.displayName) {
+          return location.displayName;
+        }
+        
+        let locationParts = [];
+        if (location.city) locationParts.push(location.city);
+        if (location.port) locationParts.push(location.port);
+        if (location.country) locationParts.push(location.country);
+        
+        return locationParts.length > 0 ? locationParts.join(', ') : 'Location not specified';
+      }
+      
+      return 'Location not specified';
     }
 
     async function loadAllApplications() {
@@ -115,6 +155,8 @@
           headers: { 'Authorization': 'Bearer ' + token }
         });
         const jobs = await res.json();
+        
+        console.log('Loaded jobs:', jobs);
         
         if (jobs.length === 0) {
           document.getElementById('applicationsList').innerHTML = `
@@ -139,16 +181,17 @@
               });
               const detailedApplications = await appRes.json();
               
-              detailedApplications.forEach(app => {
-                app.jobTitle = job.title;
-                app.jobCompany = job.company;
-                app.jobCategory = job.jobCategory;
-                app.jobPosition = job.position;
-                app.jobLocation = job.location;
-                app.jobType = job.jobType;
-                app.jobSalary = job.salary;
-                allApplications.push(app);
-              });
+                             detailedApplications.forEach(app => {
+                 app.jobTitle = job.title;
+                 app.jobCompany = job.company;
+                 app.jobCategory = job.jobCategory;
+                 app.jobPosition = job.position;
+                 app.jobLocation = job.location;
+                 app.jobType = job.jobType;
+                 app.jobSalary = job.salary;
+                 console.log('Application with ID:', app._id, 'Resume:', app.resume);
+                 allApplications.push(app);
+               });
             } catch (error) {
               console.error(`Error fetching applications for job ${job._id}:`, error);
               // Fallback to basic application data
@@ -216,7 +259,7 @@
                 <span class="job-tag job-category">${app.jobCategory}</span>
                 <span class="job-tag job-position">${app.jobPosition}</span>
                 <span class="job-tag job-type">${app.jobType}</span>
-                <span class="job-tag job-location">${app.jobLocation}</span>
+                <span class="job-tag job-location">${formatLocation(app.jobLocation)}</span>
                 <span class="job-tag job-salary">${app.jobSalary}</span>
               </div>
               <div class="job-date">Applied: ${formatDate(app.appliedAt)}</div>
@@ -241,13 +284,20 @@
                         ${app.status === 'accepted' ? 'disabled' : ''}>
                   ✅ Accept
                 </button>
-                <button class="btn btn-sm ${app.status === 'rejected' ? 'btn-danger' : 'btn-outline'}" 
-                        onclick="updateApplicationStatus('${app._id}', 'rejected')" 
-                        ${app.status === 'rejected' ? 'disabled' : ''}>
-                  ❌ Reject
-                </button>
-              </div>
-            </div>
+                                 <button class="btn btn-sm ${app.status === 'rejected' ? 'btn-danger' : 'btn-outline'}" 
+                         onclick="updateApplicationStatus('${app._id}', 'rejected')" 
+                         ${app.status === 'rejected' ? 'disabled' : ''}>
+                   ❌ Reject
+                 </button>
+                 ${app.status === 'rejected' ? `
+                   <button class="btn btn-sm btn-danger" 
+                           onclick="deleteApplication('${app._id}')" 
+                           style="margin-top: 4px;">
+                     🗑️ Delete
+                   </button>
+                 ` : ''}
+               </div>
+             </div>
           </div>
           
           <div class="contact-info">
@@ -256,11 +306,16 @@
             <p><strong>Phone:</strong> <a href="tel:${app.phone || app.applicant?.phone || ''}" class="contact-link">${app.phone || app.applicant?.phone || 'Not provided'}</a></p>
           </div>
           
-          ${app.resume ? `
-            <div style="margin: 16px 0;">
-              <a href="/uploads/${app.resume.filename}" target="_blank" download="${app.resume.originalName || 'resume'}" class="btn btn-success btn-sm">
-                📄 Download Resume (${app.resume.originalName || 'resume'})
-              </a>
+                     ${app.resume ? `
+             <div style="margin: 16px 0;">
+               <a href="#" class="btn btn-success btn-sm" onclick="handleResumeDownload(event, '${app._id}')">
+                 📄 Download Resume (${app.resume.originalName || 'resume'})
+               </a>
+              ${app.resume.filename && !app.resume.data ? `
+                <div style="margin-top: 8px; padding: 8px; background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; color: #856404; font-size: 12px;">
+                  ⚠️ This resume was uploaded before the system update and may not be available for download.
+                </div>
+              ` : ''}
             </div>
           ` : ''}
           
@@ -291,6 +346,10 @@
       const categoryFilter = document.getElementById('categoryFilter').value;
       const positionFilter = document.getElementById('positionFilter').value;
       const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+      const countryFilter = document.getElementById('countryFilter').value;
+      const cityFilter = document.getElementById('cityFilter').value;
+      const portFilter = document.getElementById('portFilter').value;
+      const customPortInput = document.getElementById('customPortInput');
       
       let filteredApplications = allApplications;
       
@@ -314,6 +373,51 @@
         );
       }
       
+      // Location filtering
+      if (countryFilter) {
+        filteredApplications = filteredApplications.filter(app => {
+          // Handle both old string format and new object format
+          if (typeof app.jobLocation === 'string') {
+            return app.jobLocation.toLowerCase().includes(countryFilter.toLowerCase());
+          } else if (app.jobLocation && app.jobLocation.country) {
+            return app.jobLocation.country.toLowerCase().includes(countryFilter.toLowerCase());
+          }
+          return false;
+        });
+      }
+      
+      if (cityFilter) {
+        filteredApplications = filteredApplications.filter(app => {
+          if (typeof app.jobLocation === 'string') {
+            return app.jobLocation.toLowerCase().includes(cityFilter.toLowerCase());
+          } else if (app.jobLocation && app.jobLocation.city) {
+            return app.jobLocation.city.toLowerCase().includes(cityFilter.toLowerCase());
+          }
+          return false;
+        });
+      }
+      
+      if (portFilter && portFilter !== 'custom') {
+        filteredApplications = filteredApplications.filter(app => {
+          if (typeof app.jobLocation === 'string') {
+            return app.jobLocation.toLowerCase().includes(portFilter.toLowerCase());
+          } else if (app.jobLocation && app.jobLocation.port) {
+            return app.jobLocation.port.toLowerCase().includes(portFilter.toLowerCase());
+          }
+          return false;
+        });
+      } else if (portFilter === 'custom' && customPortInput.value.trim()) {
+        const customPort = customPortInput.value.trim().toLowerCase();
+        filteredApplications = filteredApplications.filter(app => {
+          if (typeof app.jobLocation === 'string') {
+            return app.jobLocation.toLowerCase().includes(customPort);
+          } else if (app.jobLocation && app.jobLocation.port) {
+            return app.jobLocation.port.toLowerCase().includes(customPort);
+          }
+          return false;
+        });
+      }
+      
       displayApplications(filteredApplications);
     }
 
@@ -322,6 +426,11 @@
       document.getElementById('categoryFilter').value = '';
       document.getElementById('positionFilter').value = '';
       document.getElementById('searchFilter').value = '';
+      document.getElementById('countryFilter').value = '';
+      document.getElementById('cityFilter').value = '';
+      document.getElementById('portFilter').value = '';
+      document.getElementById('customPortInput').value = '';
+      document.getElementById('customPortInput').style.display = 'none';
       displayApplications(allApplications);
     }
 
@@ -402,8 +511,215 @@
       }, 3000);
     }
 
-    // Load applications when page loads
-    document.addEventListener('DOMContentLoaded', loadAllApplications);
+    async function handleResumeDownload(event, applicationId) {
+      const token = localStorage.getItem('token');
+      
+      // Prevent the default link behavior
+      event.preventDefault();
+      
+      try {
+        const response = await fetch(`/api/v1/jobs/applications/${applicationId}/resume`, {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          
+          if (errorData.code === 'OLD_FORMAT') {
+            showMessage(`⚠️ ${errorData.message}`, 'warning');
+          } else {
+            showMessage(`Resume not available: ${errorData.message}`, 'error');
+          }
+          return false;
+        }
+        
+        // Get the blob from the response
+        const blob = await response.blob();
+        
+        // Create a download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `resume_${applicationId}.pdf`; // You can get the filename from response headers if needed
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        showMessage('Resume downloaded successfully!', 'success');
+        return true;
+      } catch (error) {
+        console.error('Error downloading resume:', error);
+        showMessage('Error downloading resume', 'error');
+        return false;
+      }
+    }
+
+    async function deleteApplication(applicationId) {
+      if (!confirm('Are you sure you want to delete this rejected application? This action cannot be undone.')) {
+        return;
+      }
+
+      const token = localStorage.getItem('token');
+      
+      try {
+        const res = await fetch(`/api/v1/jobs/applications/${applicationId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+        
+        if (res.ok) {
+          // Remove the application from our local array
+          allApplications = allApplications.filter(app => app._id !== applicationId);
+          
+          // Refresh the display
+          displayApplications(allApplications);
+          updateStats();
+          
+          showMessage('Application deleted successfully', 'success');
+        } else {
+          const errorData = await res.json();
+          throw new Error(errorData.message || `HTTP ${res.status}`);
+        }
+      } catch (error) {
+        console.error('Error deleting application:', error);
+        showMessage(`Failed to delete application: ${error.message}`, 'error');
+      }
+    }
+
+    // Location filtering functions
+    async function loadFilterCountries() {
+      try {
+        const response = await fetch('/api/v1/locations/countries');
+        const countries = await response.json();
+        
+        const countrySelect = document.getElementById('countryFilter');
+        countrySelect.innerHTML = '<option value="">All Countries</option>';
+        
+        countries.forEach(country => {
+          countrySelect.innerHTML += `<option value="${country}">${country}</option>`;
+        });
+      } catch (error) {
+        console.error('Error loading countries:', error);
+      }
+    }
+
+    async function loadFilterCities() {
+      const country = document.getElementById('countryFilter').value;
+      const citySelect = document.getElementById('cityFilter');
+      const portSelect = document.getElementById('portFilter');
+      
+      // Reset city and port filters
+      citySelect.innerHTML = '<option value="">All Cities</option>';
+      portSelect.innerHTML = '<option value="">All Ports</option>';
+      document.getElementById('customPortInput').style.display = 'none';
+      document.getElementById('customPortInput').value = '';
+      
+      if (!country) {
+        filterApplications();
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/v1/locations/cities/${encodeURIComponent(country)}`);
+        const cities = await response.json();
+        
+        cities.forEach(city => {
+          citySelect.innerHTML += `<option value="${city}">${city}</option>`;
+        });
+        
+        filterApplications();
+      } catch (error) {
+        console.error('Error loading cities:', error);
+        filterApplications();
+      }
+    }
+
+    async function loadFilterPorts() {
+      const country = document.getElementById('countryFilter').value;
+      const city = document.getElementById('cityFilter').value;
+      const portSelect = document.getElementById('portFilter');
+      
+      // Reset port filter
+      portSelect.innerHTML = '<option value="">All Ports</option>';
+      portSelect.innerHTML += '<option value="custom">➕ Add Custom Port</option>';
+      document.getElementById('customPortInput').style.display = 'none';
+      document.getElementById('customPortInput').value = '';
+      
+      if (!country || !city) {
+        filterApplications();
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/v1/locations/ports/${encodeURIComponent(country)}/${encodeURIComponent(city)}`);
+        const ports = await response.json();
+        
+        ports.forEach(port => {
+          portSelect.innerHTML += `<option value="${port}">${port}</option>`;
+        });
+        
+        filterApplications();
+      } catch (error) {
+        console.error('Error loading ports:', error);
+        filterApplications();
+      }
+    }
+
+    function handlePortSelection() {
+      const portFilter = document.getElementById('portFilter');
+      const customPortInput = document.getElementById('customPortInput');
+      
+      if (portFilter.value === 'custom') {
+        customPortInput.style.display = 'block';
+        customPortInput.focus();
+      } else {
+        customPortInput.style.display = 'none';
+        customPortInput.value = '';
+      }
+      
+      filterApplications();
+    }
+
+    function handleCustomPortInput() {
+      const portFilter = document.getElementById('portFilter');
+      const customPortInput = document.getElementById('customPortInput');
+      
+      if (portFilter.value === 'custom') {
+        // Update the custom option text to show what user is typing
+        const customOption = portFilter.querySelector('option[value="custom"]');
+        if (customOption) {
+          customOption.textContent = customPortInput.value ? `➕ ${customPortInput.value}` : '➕ Add Custom Port';
+        }
+      }
+      
+      filterApplications();
+    }
+
+    // Mobile menu toggle function
+    function toggleMobileMenu() {
+      const navLinks = document.getElementById('navLinks');
+      navLinks.classList.toggle('show');
+    }
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(event) {
+      const navLinks = document.getElementById('navLinks');
+      const mobileToggle = document.querySelector('.mobile-menu-toggle');
+      
+      if (!navLinks.contains(event.target) && !mobileToggle.contains(event.target)) {
+        navLinks.classList.remove('show');
+      }
+    });
+
+    // Load applications and countries when page loads
+    document.addEventListener('DOMContentLoaded', async function() {
+      await loadAllApplications();
+      await loadFilterCountries();
+    });
   </script>
 </body>
 </html> 

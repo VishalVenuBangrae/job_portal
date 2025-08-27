@@ -13,7 +13,8 @@
         <span class="logo-icon">🔗</span>
         <span>Yacht Crew Portal</span>
       </a>
-      <nav class="nav-links">
+      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+      <nav class="nav-links" id="navLinks">
         <a href="/jobseeker.html" class="nav-link">Dashboard</a>
         <a href="/jobseeker-jobs.html" class="nav-link active">Browse Jobs</a>
         <a href="/jobseeker-applications.html" class="nav-link">My Applications</a>
@@ -51,6 +52,16 @@
           <option value="Contract">Contract</option>
           <option value="Temporary">Temporary</option>
         </select>
+        <select id="countryFilter" class="filter-select" onchange="loadFilterCities()">
+          <option value="">All Countries</option>
+        </select>
+        <select id="cityFilter" class="filter-select" onchange="loadFilterPorts()" disabled>
+          <option value="">All Cities</option>
+        </select>
+        <select id="portFilter" class="filter-select" onchange="handlePortSelection()" disabled>
+          <option value="">All Ports</option>
+        </select>
+        <input type="text" id="customPortInput" class="filter-input" placeholder="Or type custom port name..." style="display: none;" onkeyup="handleCustomPortInput()">
         <input type="text" id="searchFilter" class="filter-input" placeholder="Search jobs..." onkeyup="filterJobs()">
         <button class="btn btn-outline" onclick="clearFilters()">Clear Filters</button>
       </div>
@@ -129,14 +140,39 @@
       }
 
       try {
-        const res = await fetch('/api/v1/jobs', {
+        // Build query parameters for filtering
+        const params = new URLSearchParams();
+        const countryFilter = document.getElementById('countryFilter').value;
+        const cityFilter = document.getElementById('cityFilter').value;
+        const portFilter = document.getElementById('portFilter').value;
+        const customPortInput = document.getElementById('customPortInput');
+        const categoryFilter = document.getElementById('categoryFilter').value;
+        const positionFilter = document.getElementById('positionFilter').value;
+        const jobTypeFilter = document.getElementById('jobTypeFilter').value;
+        const searchFilter = document.getElementById('searchFilter').value;
+
+        if (countryFilter) params.append('country', countryFilter);
+        if (cityFilter) params.append('city', cityFilter);
+        
+        // Handle custom port input
+        if (portFilter === 'custom' && customPortInput.value.trim()) {
+          params.append('port', customPortInput.value.trim());
+        } else if (portFilter && portFilter !== 'custom') {
+          params.append('port', portFilter);
+        }
+        
+        if (categoryFilter) params.append('jobCategory', categoryFilter);
+        if (positionFilter) params.append('position', positionFilter);
+        if (jobTypeFilter) params.append('jobType', jobTypeFilter);
+        if (searchFilter) params.append('search', searchFilter);
+
+        const res = await fetch(`/api/v1/jobs?${params.toString()}`, {
           headers: { 'Authorization': 'Bearer ' + token }
         });
         const jobs = await res.json();
         
-        // Filter only active jobs and sort by newest first
-        allJobs = jobs.filter(job => job.status === 'active')
-                     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        // Sort by newest first
+        allJobs = jobs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         
         displayJobs(allJobs);
       } catch (error) {
@@ -172,7 +208,7 @@
                 <span class="job-tag job-category">${job.jobCategory}</span>
                 <span class="job-tag job-position">${job.position}</span>
                 <span class="job-tag job-type">${job.jobType}</span>
-                <span class="job-tag job-location">${job.location}</span>
+                <span class="job-tag job-location">${job.location.displayName || job.location}</span>
                 <span class="job-tag job-salary">${job.salary}</span>
               </div>
               <div class="job-date">Posted: ${formatDate(job.createdAt)}</div>
@@ -200,43 +236,168 @@
     }
 
     function filterJobs() {
-      const categoryFilter = document.getElementById('categoryFilter').value;
-      const positionFilter = document.getElementById('positionFilter').value;
-      const jobTypeFilter = document.getElementById('jobTypeFilter').value;
-      const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+      // Use server-side filtering instead of client-side
+      loadJobs();
+    }
+
+    // Location filtering functions
+    async function loadFilterCountries() {
+      try {
+        const response = await fetch('/api/v1/locations/countries');
+        const countries = await response.json();
+        
+        const countryFilter = document.getElementById('countryFilter');
+        countryFilter.innerHTML = '<option value="">All Countries</option>';
+        
+        countries.forEach(country => {
+          const option = document.createElement('option');
+          option.value = country;
+          option.textContent = country;
+          countryFilter.appendChild(option);
+        });
+      } catch (error) {
+        console.error('Error loading countries:', error);
+      }
+    }
+
+    async function loadFilterCities() {
+      const countryFilter = document.getElementById('countryFilter');
+      const cityFilter = document.getElementById('cityFilter');
+      const portFilter = document.getElementById('portFilter');
       
-      let filteredJobs = allJobs;
+      const country = countryFilter.value;
       
-      if (categoryFilter) {
-        filteredJobs = filteredJobs.filter(job => job.jobCategory === categoryFilter);
+      // Reset city and port filters
+      cityFilter.innerHTML = '<option value="">All Cities</option>';
+      portFilter.innerHTML = '<option value="">All Ports</option>';
+      
+      if (!country) {
+        cityFilter.disabled = true;
+        portFilter.disabled = true;
+        loadJobs();
+        return;
       }
       
-      if (positionFilter) {
-        filteredJobs = filteredJobs.filter(job => job.position === positionFilter);
+      try {
+        const response = await fetch(`/api/v1/locations/cities/${encodeURIComponent(country)}`);
+        const cities = await response.json();
+        
+        cityFilter.disabled = false;
+        
+        cities.forEach(city => {
+          const option = document.createElement('option');
+          option.value = city;
+          option.textContent = city;
+          cityFilter.appendChild(option);
+        });
+        
+        loadJobs();
+      } catch (error) {
+        console.error('Error loading cities:', error);
+      }
+    }
+
+    async function loadFilterPorts() {
+      const countryFilter = document.getElementById('countryFilter');
+      const cityFilter = document.getElementById('cityFilter');
+      const portFilter = document.getElementById('portFilter');
+      const customPortInput = document.getElementById('customPortInput');
+      
+      const country = countryFilter.value;
+      const city = cityFilter.value;
+      
+      // Reset port filter and custom input
+      portFilter.innerHTML = '<option value="">All Ports</option>';
+      customPortInput.style.display = 'none';
+      customPortInput.value = '';
+      
+      if (!country || !city) {
+        portFilter.disabled = true;
+        customPortInput.style.display = 'none';
+        loadJobs();
+        return;
       }
       
-      if (jobTypeFilter) {
-        filteredJobs = filteredJobs.filter(job => job.jobType === jobTypeFilter);
+      try {
+        const response = await fetch(`/api/v1/locations/ports/${encodeURIComponent(country)}/${encodeURIComponent(city)}`);
+        const ports = await response.json();
+        
+        portFilter.disabled = false;
+        
+        if (ports.length > 0) {
+          ports.forEach(port => {
+            const option = document.createElement('option');
+            option.value = port;
+            option.textContent = port;
+            portFilter.appendChild(option);
+          });
+        }
+        
+        // Add "Add Custom Port" option
+        const customOption = document.createElement('option');
+        customOption.value = 'custom';
+        customOption.textContent = '➕ Add Custom Port';
+        portFilter.appendChild(customOption);
+        
+        loadJobs();
+      } catch (error) {
+        console.error('Error loading ports:', error);
       }
+    }
+
+    function handlePortSelection() {
+      const portFilter = document.getElementById('portFilter');
+      const customPortInput = document.getElementById('customPortInput');
       
-      if (searchFilter) {
-        filteredJobs = filteredJobs.filter(job => 
-          job.title.toLowerCase().includes(searchFilter) ||
-          job.company.toLowerCase().includes(searchFilter) ||
-          job.location.toLowerCase().includes(searchFilter) ||
-          job.description.toLowerCase().includes(searchFilter)
-        );
+      if (portFilter.value === 'custom') {
+        // Show custom port input
+        customPortInput.style.display = 'block';
+        customPortInput.focus();
+        customPortInput.value = '';
+      } else {
+        // Hide custom port input and filter jobs
+        customPortInput.style.display = 'none';
+        customPortInput.value = '';
+        filterJobs();
       }
+    }
+
+    function handleCustomPortInput() {
+      const customPortInput = document.getElementById('customPortInput');
+      const portName = customPortInput.value.trim();
       
-      displayJobs(filteredJobs);
+      if (portName.length > 0) {
+        // Update the port filter to show the custom port name
+        const portFilter = document.getElementById('portFilter');
+        const customOption = portFilter.querySelector('option[value="custom"]');
+        if (customOption) {
+          customOption.textContent = `➕ Add Custom Port (${portName})`;
+        }
+        
+        // Filter jobs with the custom port
+        filterJobs();
+      }
     }
 
     function clearFilters() {
       document.getElementById('categoryFilter').value = '';
       document.getElementById('positionFilter').value = '';
       document.getElementById('jobTypeFilter').value = '';
+      document.getElementById('countryFilter').value = '';
+      document.getElementById('cityFilter').value = '';
+      document.getElementById('portFilter').value = '';
       document.getElementById('searchFilter').value = '';
-      displayJobs(allJobs);
+      
+      // Clear custom port input
+      const customPortInput = document.getElementById('customPortInput');
+      customPortInput.value = '';
+      customPortInput.style.display = 'none';
+      
+      // Reset disabled states
+      document.getElementById('cityFilter').disabled = true;
+      document.getElementById('portFilter').disabled = true;
+      
+      loadJobs();
     }
 
     function openApplicationModal(jobId) {
@@ -348,7 +509,24 @@
         });
       }
 
-      // Load jobs when page loads
+      // Mobile menu toggle function
+      function toggleMobileMenu() {
+        const navLinks = document.getElementById('navLinks');
+        navLinks.classList.toggle('show');
+      }
+
+      // Close mobile menu when clicking outside
+      document.addEventListener('click', function(event) {
+        const navLinks = document.getElementById('navLinks');
+        const mobileToggle = document.querySelector('.mobile-menu-toggle');
+        
+        if (!navLinks.contains(event.target) && !mobileToggle.contains(event.target)) {
+          navLinks.classList.remove('show');
+        }
+      });
+
+      // Load countries and jobs when page loads
+      loadFilterCountries();
       loadJobs();
     });
   </script>

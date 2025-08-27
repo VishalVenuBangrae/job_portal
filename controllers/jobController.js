@@ -8,6 +8,12 @@ export const createJob = async (req, res) => {
     if (!title || !company || !location || !description || !salary || !jobType || !jobCategory || !position) {
       return res.status(400).json({ message: 'All required fields must be provided' });
     }
+
+    // Validate location structure
+    if (!location.country || !location.city || !location.displayName) {
+      return res.status(400).json({ message: 'Location must include country, city, and display name' });
+    }
+
     const job = new Job({
       title,
       company,
@@ -29,7 +35,61 @@ export const createJob = async (req, res) => {
 
 export const getJobs = async (req, res) => {
   try {
-    const jobs = await Job.find().populate('employer', 'name email');
+    const { 
+      country, 
+      city, 
+      port, 
+      jobCategory, 
+      position, 
+      jobType, 
+      search,
+      sortBy = 'createdAt',
+      sortOrder = 'desc'
+    } = req.query;
+
+    // Build filter object
+    const filter = { status: 'active' };
+
+    // Location filters
+    if (country) {
+      filter['location.country'] = { $regex: country, $options: 'i' };
+    }
+    if (city) {
+      filter['location.city'] = { $regex: city, $options: 'i' };
+    }
+    if (port) {
+      filter['location.port'] = { $regex: port, $options: 'i' };
+    }
+
+    // Job filters
+    if (jobCategory) {
+      filter.jobCategory = jobCategory;
+    }
+    if (position) {
+      filter.position = position;
+    }
+    if (jobType) {
+      filter.jobType = jobType;
+    }
+
+    // Search filter
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { company: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { 'location.displayName': { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    // Sort options
+    const sortOptions = {};
+    sortOptions[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+    const jobs = await Job.find(filter)
+      .populate('employer', 'name email')
+      .sort(sortOptions);
+
     res.json(jobs);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -96,9 +156,8 @@ export const applyToJob = async (req, res) => {
     let resumeData = null;
     if (req.file) {
       resumeData = {
-        filename: req.file.filename,
+        data: req.file.buffer,
         originalName: req.file.originalname,
-        path: req.file.path,
         mimetype: req.file.mimetype
       };
     } else {
@@ -194,6 +253,65 @@ export const getJobApplications = async (req, res) => {
   }
 };
 
+export const getResumeFile = async (req, res) => {
+  try {
+    const { applicationId } = req.params;
+    
+    // Find the job that contains this application
+    const job = await Job.findOne({
+      'applications._id': applicationId,
+      employer: req.user._id
+    });
+
+    if (!job) {
+      return res.status(404).json({ message: 'Application not found or not authorized' });
+    }
+    
+    // Get the application
+    const application = job.applications.id(applicationId);
+    if (!application) {
+      return res.status(404).json({ message: 'Application not found' });
+    }
+
+    if (!application.resume) {
+      return res.status(404).json({ message: 'Resume not found' });
+    }
+
+    // Handle both old and new resume formats
+    let resumeData, originalName, mimetype;
+    
+    if (application.resume.data) {
+      // New format - data stored in database
+      resumeData = application.resume.data;
+      originalName = application.resume.originalName;
+      mimetype = application.resume.mimetype;
+    } else if (application.resume.filename) {
+      // Old format - file stored on disk
+      return res.status(404).json({ 
+        message: 'This resume was uploaded before the system update. Please contact the applicant to re-upload their resume.',
+        code: 'OLD_FORMAT'
+      });
+    } else {
+      return res.status(404).json({ message: 'Resume not found' });
+    }
+
+    // Set appropriate headers
+    res.set({
+      'Content-Type': mimetype,
+      'Content-Disposition': `attachment; filename="${originalName}"`,
+      'Content-Length': resumeData.length
+    });
+
+    // Send the file data
+    res.send(resumeData);
+  } catch (error) {
+    console.error('getResumeFile error:', error.message);
+    res.status(500).json({ 
+      message: 'Error retrieving resume file'
+    });
+  }
+};
+
 export const updateApplicationStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -229,6 +347,44 @@ export const updateApplicationStatus = async (req, res) => {
     console.error('updateApplicationStatus error:', error.message);
     res.status(500).json({ 
       message: 'Error updating application status'
+    });
+  }
+};
+
+export const deleteApplication = async (req, res) => {
+  try {
+    const { applicationId } = req.params;
+    
+    // Find the job that contains this application
+    const job = await Job.findOne({
+      'applications._id': applicationId,
+      employer: req.user._id
+    });
+
+    if (!job) {
+      return res.status(404).json({ message: 'Application not found or not authorized' });
+    }
+    
+    // Get the application
+    const application = job.applications.id(applicationId);
+    if (!application) {
+      return res.status(404).json({ message: 'Application not found' });
+    }
+
+    // Only allow deletion of rejected applications
+    if (application.status !== 'rejected') {
+      return res.status(400).json({ message: 'Only rejected applications can be deleted' });
+    }
+
+    // Remove the application from the job
+    job.applications.pull(applicationId);
+    await job.save({ validateBeforeSave: false });
+    
+    res.json({ message: 'Application deleted successfully' });
+  } catch (error) {
+    console.error('deleteApplication error:', error.message);
+    res.status(500).json({ 
+      message: 'Error deleting application'
     });
   }
 }; 
