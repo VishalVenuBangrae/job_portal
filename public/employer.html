@@ -3,28 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Employer Dashboard - Yacht Crew Portal</title>
-  <link rel="stylesheet" href="/styles.css">
+  <title>Employer Dashboard - Nauti Crew Agency</title>
+  <link rel="stylesheet" href="/nca-dashboard.css">
 </head>
-<body>
-  <header class="header">
-    <div class="nav-container">
-      <a href="/employer.html" class="logo">
-        <span class="logo-icon">🔗</span>
-        <span>Yacht Crew Portal</span>
-      </a>
-      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
-      <nav class="nav-links" id="navLinks">
-        <a href="/employer.html" class="nav-link active">Dashboard</a>
-        <a href="/post-job.html" class="nav-link">Post Job</a>
-        <a href="/employer-applications.html" class="nav-link">Applications</a>
-        <a href="/manage-jobs.html" class="nav-link">Manage Jobs</a>
-        <a href="/change-password.html" class="nav-link">Settings</a>
-        <a href="/login.html" class="nav-link" onclick="logout()">Logout</a>
-      </nav>
-    </div>
-  </header>
-
+<body class="nca-app" data-nca-role="employer" data-nca-page="dashboard" data-nca-title="Employer Dashboard" data-nca-subtitle="Manage job postings and review crew applications">
   <div class="container">
     <div class="stats-grid">
       <div class="stat-card">
@@ -47,28 +29,28 @@
 
     <div class="dashboard-grid">
       <div class="dashboard-card" onclick="window.location.href='/post-job.html'">
-        <div class="card-icon">🚀</div>
+        <div class="card-icon">Post</div>
         <div class="card-title">Post New Job</div>
-        <div class="card-description">Create a new job posting for yacht crew positions. Choose from Daywork/Freelance or Delivery categories.</div>
+        <div class="card-description">Create a new job posting for yacht crew positions. Choose from Daywork, Freelance, or Delivery.</div>
         <a href="/post-job.html" class="btn btn-primary">Post Job</a>
       </div>
       
       <div class="dashboard-card" onclick="window.location.href='/employer-applications.html'">
-        <div class="card-icon">📋</div>
+        <div class="card-icon">Apps</div>
         <div class="card-title">View Applications</div>
         <div class="card-description">Review all job applications, contact candidates, and update application statuses.</div>
         <a href="/employer-applications.html" class="btn btn-primary">View Applications</a>
       </div>
       
       <div class="dashboard-card" onclick="window.location.href='/manage-jobs.html'">
-        <div class="card-icon">🔧</div>
+        <div class="card-icon">Manage</div>
         <div class="card-title">Manage Jobs</div>
         <div class="card-description">Edit, close, or reopen your job postings. Track application counts and job status.</div>
         <a href="/manage-jobs.html" class="btn btn-outline">Manage Jobs</a>
       </div>
       
       <div class="dashboard-card" onclick="window.location.href='/change-password.html'">
-        <div class="card-icon">⚙️</div>
+        <div class="card-icon">Settings</div>
         <div class="card-title">Account Settings</div>
         <div class="card-description">Change your password and manage your account settings.</div>
         <a href="/change-password.html" class="btn btn-outline">Settings</a>
@@ -77,7 +59,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h2>📝 Recent Job Postings</h2>
+        <h2>Recent Job Postings</h2>
       </div>
       <div class="card-body">
         <div id="recentJobsList">
@@ -95,27 +77,14 @@
     document.addEventListener('DOMContentLoaded', function() {
       const token = localStorage.getItem('token');
       const userType = localStorage.getItem('userType');
-      
-      console.log('Employer page loaded - Token:', !!token, 'UserType:', userType);
-      
-      // Comment out authentication check for debugging
-      /*
       if (!token || userType !== 'employer') {
-        console.log('Not authenticated as employer, redirecting to login');
-        // Not authenticated or wrong user type, redirect to login
         window.location.href = '/login.html';
         return;
-      } else {
-        console.log('Authenticated as employer, staying on dashboard');
       }
-      */
+      loadDashboardData();
     });
 
-    function logout() {
-      localStorage.removeItem('token');
-      localStorage.removeItem('userType');
-      window.location.href = '/login.html';
-    }
+    function logout() { ncaLogout(); }
 
     function formatDate(dateString) {
       const date = new Date(dateString);
@@ -252,7 +221,7 @@
     });
 
     // Load dashboard data when page loads
-    document.addEventListener('DOMContentLoaded', loadDashboardData);
   </script>
+  <script src="/nca-layout.js"></script>
 </body>
 </html> 

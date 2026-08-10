@@ -3,537 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign Up - Yacht Crew Portal</title>
-  <link rel="stylesheet" href="/styles.css">
+  <title>Join the Crew - Nauti Crew Agency</title>
+  <link rel="stylesheet" href="/nca-dashboard.css">
   <style>
-    /* Signup Page Specific Styles */
-    .signup-container {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* Animated Background */
-    .animated-bg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c);
-      background-size: 400% 400%;
-      animation: gradientShift 15s ease infinite;
-      opacity: 0.8;
-    }
-
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    /* Floating Elements */
-    .floating-elements {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
-
-    .floating-element {
-      position: absolute;
-      opacity: 0.1;
-      animation: float 6s ease-in-out infinite;
-    }
-
-    .floating-element:nth-child(1) {
-      top: 15%;
-      left: 15%;
-      font-size: 48px;
-      animation-delay: 0s;
-    }
-
-    .floating-element:nth-child(2) {
-      top: 70%;
-      right: 10%;
-      font-size: 36px;
-      animation-delay: 2s;
-    }
-
-    .floating-element:nth-child(3) {
-      bottom: 20%;
-      left: 25%;
-      font-size: 24px;
-      animation-delay: 4s;
-    }
-
-    .floating-element:nth-child(4) {
-      top: 40%;
-      right: 25%;
-      font-size: 32px;
-      animation-delay: 1s;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-20px) rotate(5deg); }
-    }
-
-    /* Signup Card */
-    .signup-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 20px;
-      padding: 40px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      max-width: 500px;
-      width: 90%;
-      position: relative;
-      z-index: 10;
-      transform: translateY(20px);
-      opacity: 0;
-      animation: slideUp 0.8s ease forwards;
-    }
-
-    @keyframes slideUp {
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    .signup-header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .signup-logo {
-      font-size: 48px;
-      margin-bottom: 10px;
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
-
-    .signup-title {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 5px;
-    }
-
-    .signup-subtitle {
-      color: var(--text-light);
-      font-size: 14px;
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-      position: relative;
-    }
-
-    .form-group.full-width {
-      grid-column: 1 / -1;
-    }
-
-    .form-input, .form-select {
-      width: 100%;
-      padding: 15px 20px;
-      border: 2px solid #e1e5e9;
-      border-radius: 12px;
-      font-size: 16px;
-      transition: all 0.3s ease;
-      background: rgba(255, 255, 255, 0.9);
-    }
-
-    .form-input:focus, .form-select:focus {
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-      outline: none;
-    }
-
-    .form-input:focus + .input-icon {
-      color: #667eea;
-    }
-
-    .input-icon {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #999;
-      transition: color 0.3s ease;
-    }
-
-    .file-upload {
-      position: relative;
-      display: inline-block;
-      width: 100%;
-    }
-
-    .file-upload input[type=file] {
-      position: absolute;
-      opacity: 0;
-      width: 100%;
-      height: 100%;
-      cursor: pointer;
-    }
-
-    .file-upload-label {
-      display: block;
-      padding: 15px 20px;
-      border: 2px dashed #e1e5e9;
-      border-radius: 12px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      background: rgba(255, 255, 255, 0.9);
-    }
-
-    .file-upload-label:hover {
-      border-color: #667eea;
-      background: rgba(102, 126, 234, 0.05);
-    }
-
-    .file-upload input[type=file]:focus + .file-upload-label {
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .btn-signup {
-      width: 100%;
-      padding: 15px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn-signup:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-    }
-
-    .btn-signup:active {
-      transform: translateY(0);
-    }
-
-    .btn-signup::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s;
-    }
-
-    .btn-signup:hover::before {
-      left: 100%;
-    }
-
-    .signup-links {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .signup-links a {
-      color: #667eea;
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.3s ease;
-    }
-
-    .signup-links a:hover {
-      color: #764ba2;
-    }
-
-    .divider {
-      margin: 20px 0;
-      text-align: center;
-      position: relative;
-    }
-
-    .divider::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: #e1e5e9;
-    }
-
-    .divider span {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 0 15px;
-      color: var(--text-light);
-      font-size: 12px;
-    }
-
-    /* Loading Animation */
+    .nca-auth-card { max-width: 500px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 520px) { .form-row { grid-template-columns: 1fr; } }
     .loading-spinner {
       display: none;
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       border: 2px solid rgba(255, 255, 255, 0.3);
-      border-top: 2px solid white;
+      border-top-color: white;
       border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-left: 10px;
+      animation: spin 0.8s linear infinite;
+      margin-left: 8px;
+      vertical-align: middle;
     }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* Error Message */
-    .error-message {
-      background: #fee;
-      color: #c53030;
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 15px;
-      border-left: 4px solid #c53030;
-      display: none;
-    }
-
-    /* Success Message */
-    .success-message {
-      background: #f0fff4;
-      color: #38a169;
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 15px;
-      border-left: 4px solid #38a169;
-      display: none;
-    }
-
-    /* User Type Toggle */
-    .user-type-toggle {
-      display: flex;
-      background: #f8f9fa;
-      border-radius: 12px;
-      padding: 4px;
-      margin-bottom: 20px;
-    }
-
-    .user-type-option {
-      flex: 1;
-      padding: 12px;
-      text-align: center;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-weight: 500;
-    }
-
-    .user-type-option.active {
-      background: #667eea;
-      color: white;
-      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-    }
-
-    .user-type-option:not(.active):hover {
-      background: #e9ecef;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .signup-card {
-        padding: 30px 20px;
-        margin: 20px;
-      }
-      
-      .signup-title {
-        font-size: 24px;
-      }
-      
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-      
-      .form-input,
-      .form-select {
-        font-size: 16px; /* Prevents zoom on iOS */
-      }
-      
-      .user-type-toggle {
-        flex-direction: column;
-        gap: 8px;
-      }
-      
-      .user-type-option {
-        padding: 15px;
-        min-height: 44px;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .signup-card {
-        padding: 20px 15px;
-        margin: 10px;
-      }
-      
-      .signup-title {
-        font-size: 20px;
-      }
-      
-      .signup-subtitle {
-        font-size: 12px;
-      }
-      
-      .form-input,
-      .form-select {
-        padding: 12px 16px;
-        min-height: 44px; /* Touch-friendly */
-      }
-      
-      .btn-signup {
-        min-height: 44px;
-        font-size: 16px;
-      }
-      
-      .file-upload-label {
-        padding: 12px 16px;
-        min-height: 44px;
-      }
-    }
-    
-    /* Touch-friendly improvements */
-    @media (hover: none) and (pointer: coarse) {
-      .btn-signup {
-        min-height: 44px;
-      }
-      
-      .form-input,
-      .form-select {
-        min-height: 44px;
-      }
-      
-      .user-type-option {
-        min-height: 44px;
-      }
-    }
-    
-    /* Landscape orientation */
-    @media (max-width: 768px) and (orientation: landscape) {
-      .signup-container {
-        padding: 20px 0;
-      }
-      
-      .signup-card {
-        margin: 10px;
-      }
-      
-      .user-type-toggle {
-        flex-direction: row;
-      }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
-<body>
-  <div class="signup-container">
-    <!-- Animated Background -->
-    <div class="animated-bg"></div>
-    
-    <!-- Floating Elements -->
-    <div class="floating-elements">
-      <div class="floating-element">🔗</div>
-      <div class="floating-element">⛵</div>
-      <div class="floating-element">🌊</div>
-      <div class="floating-element">🏴‍☠️</div>
+<body class="nca-auth">
+  <div class="nca-auth-card">
+    <div class="nca-auth-logo">
+      <img src="/images/nca-logo.png" alt="Nauti Crew Agency">
+      <div class="eyebrow">Nauti Crew Agency</div>
     </div>
+    <h1 class="nca-auth-title">Join the crew</h1>
+    <p class="nca-auth-subtitle">Create your account — then complete your profile to get selected</p>
 
-    <!-- Signup Card -->
-    <div class="signup-card">
-      <div class="signup-header">
-        <div class="signup-logo">🔗</div>
-        <h1 class="signup-title">Join the Crew</h1>
-        <p class="signup-subtitle">Create your Yacht Crew Portal account</p>
+    <form id="signupForm" enctype="multipart/form-data">
+      <div class="form-row">
+        <div class="form-group">
+          <input type="text" class="form-input" id="firstName" placeholder="First Name" required>
+          <span class="input-icon">@</span>
+        </div>
+
+        <div class="form-group">
+          <input type="text" class="form-input" id="lastName" placeholder="Last Name" required>
+          <span class="input-icon">@</span>
+        </div>
       </div>
 
-      <form id="signupForm" enctype="multipart/form-data">
-        <div class="form-row">
-          <div class="form-group">
-            <input type="text" class="form-input" id="name" placeholder="Full Name" required>
-            <span class="input-icon">👤</span>
-          </div>
-          
-          <div class="form-group">
-            <input type="email" class="form-input" id="email" placeholder="Email Address" required>
-            <span class="input-icon">📧</span>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <input type="password" class="form-input" id="password" placeholder="Password" required>
-            <span class="input-icon">🔒</span>
-          </div>
-          
-          <div class="form-group">
-            <input type="tel" class="form-input" id="phone" placeholder="Phone Number" required>
-            <span class="input-icon">📞</span>
-          </div>
-        </div>
-
-        <div class="user-type-toggle">
-          <div class="user-type-option active" data-type="jobseeker">
-            <span>👨‍💼 Jobseeker</span>
-          </div>
-          <div class="user-type-option" data-type="employer">
-            <span>🏢 Employer</span>
-          </div>
-        </div>
-
-        <div class="form-group" id="resumeField" style="display: none;">
-          <div class="file-upload">
-            <input type="file" id="resume" name="resume" accept="application/pdf">
-            <label for="resume" class="file-upload-label">
-              📄 Upload Resume (PDF)
-            </label>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-signup">
-          <span class="btn-text">Create Account</span>
-          <div class="loading-spinner"></div>
-        </button>
-
-        <div class="error-message" id="signupError"></div>
-        <div class="success-message" id="signupSuccess"></div>
-      </form>
-
-      <div class="divider">
-        <span>or</span>
+      <div class="form-group">
+        <input type="email" class="form-input" id="email" placeholder="Email Address" required>
+        <span class="input-icon">@</span>
       </div>
 
-      <div class="signup-links">
-        <p>Already have an account? <a href="/login.html">Sign in</a></p>
+      <div class="form-row">
+        <div class="form-group">
+          <input type="password" class="form-input" id="password" placeholder="Password" required>
+          <span class="input-icon">*</span>
+        </div>
+
+        <div class="form-group">
+          <input type="tel" class="form-input" id="phone" placeholder="Phone Number" required>
+          <span class="input-icon">#</span>
+        </div>
       </div>
+
+      <div class="nca-user-type-toggle user-type-toggle">
+        <div class="nca-user-type-option user-type-option active" data-type="jobseeker">
+          <span>Crew Member</span>
+        </div>
+        <div class="nca-user-type-option user-type-option" data-type="employer">
+          <span>Employer</span>
+        </div>
+      </div>
+
+      <div class="form-group" id="resumeField" style="display: none;">
+        <!-- Resume collected on crew profile page -->
+      </div>
+
+      <button type="submit" class="nca-auth-btn btn-signup">
+        <span class="btn-text">Join the Crew</span>
+        <span class="loading-spinner"></span>
+      </button>
+
+      <div class="nca-error error-message" id="signupError"></div>
+      <div class="nca-success success-message" id="signupSuccess"></div>
+    </form>
+
+    <div class="nca-divider"><span>or</span></div>
+
+    <div class="nca-auth-links">
+      <p>Already have an account? <a href="/login.html">Sign in</a></p>
     </div>
   </div>
 
@@ -559,29 +113,13 @@
         const userType = this.dataset.type;
         userTypeInput.value = userType;
         
-        // Show/hide resume field for jobseekers
+        // Crew members complete profile after signup
         if (userType === 'jobseeker') {
-          resumeField.style.display = 'block';
+          resumeField.style.display = 'none';
         } else {
           resumeField.style.display = 'none';
         }
       });
-    });
-
-    // File upload preview
-    document.getElementById('resume').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      const label = document.querySelector('.file-upload-label');
-      
-      if (file) {
-        label.textContent = `📄 ${file.name}`;
-        label.style.borderColor = '#667eea';
-        label.style.background = 'rgba(102, 126, 234, 0.05)';
-      } else {
-        label.textContent = '📄 Upload Resume (PDF)';
-        label.style.borderColor = '#e1e5e9';
-        label.style.background = 'rgba(255, 255, 255, 0.9)';
-      }
     });
 
     // Form submission
@@ -589,16 +127,13 @@
       e.preventDefault();
       
       const formData = new FormData();
-      formData.append('name', document.getElementById('name').value);
+      formData.append('firstName', document.getElementById('firstName').value);
+      formData.append('lastName', document.getElementById('lastName').value);
+      formData.append('name', `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`.trim());
       formData.append('email', document.getElementById('email').value);
       formData.append('password', document.getElementById('password').value);
       formData.append('phone', document.getElementById('phone').value);
       formData.append('userType', userTypeInput.value);
-      
-      const resumeFile = document.getElementById('resume').files[0];
-      if (resumeFile) {
-        formData.append('resume', resumeFile);
-      }
       
       const btnText = document.querySelector('.btn-text');
       const spinner = document.querySelector('.loading-spinner');
@@ -622,13 +157,12 @@
         const data = await response.json();
         
         if (response.ok) {
-          // Show success message
-          successDiv.textContent = 'Account created successfully! Please check your email for verification code.';
+          localStorage.setItem('userType', data.userType);
+
+          successDiv.textContent = 'Account created! Please check your email for a verification code.';
           successDiv.style.display = 'block';
-          
-          // Redirect to verify email page after 2 seconds
           setTimeout(() => {
-            window.location.href = '/verify-email.html';
+            window.location.href = '/verify-email.html?email=' + encodeURIComponent(data.email);
           }, 2000);
           
         } else {
@@ -643,7 +177,7 @@
         errorDiv.style.display = 'block';
       } finally {
         // Reset button state
-        btnText.textContent = 'Create Account';
+        btnText.textContent = 'Join the Crew';
         spinner.style.display = 'none';
       }
     });
@@ -660,4 +194,4 @@
     });
   </script>
 </body>
-</html> 
+</html>

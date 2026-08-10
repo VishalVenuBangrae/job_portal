@@ -1,6 +1,12 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
+const fileDocSchema = {
+    data: Buffer,
+    contentType: String,
+    originalName: String
+};
+
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -61,7 +67,58 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    emailVerificationCode: String
+    emailVerificationCode: String,
+    crewProfile: {
+        profileComplete: { type: Boolean, default: false },
+        profileStatus: {
+            type: String,
+            enum: ['active', 'inactive'],
+            default: 'active'
+        },
+        profileLastActive: { type: Date, default: Date.now },
+        profileReminderSentAt: Date,
+        firstName: String,
+        lastName: String,
+        phoneWhatsApp: { type: Boolean, default: false },
+        alternatePhone: String,
+        alternatePhoneWhatsApp: { type: Boolean, default: false },
+        positions: [{
+            type: String,
+            enum: ['Chef', 'Interior', 'Chief Stew', 'Engineer', 'Deck hand', 'Mate', 'Exterior']
+        }],
+        currentLocation: {
+            city: String,
+            state: String,
+            country: String,
+            port: String,
+            displayName: String
+        },
+        duration: {
+            type: String,
+            enum: ['1 day', '2 days', '3 days', '4 days', '5 days', '6 days', '7 days']
+        },
+        nationality: { type: String, enum: ['US', 'Non-US'] },
+        usWorkAuthorization: { type: String, enum: ['B1/B2', 'Green Card'] },
+        experience: [{
+            type: String,
+            enum: ['Green', '6 months - 1 year', '1 year +']
+        }],
+        keywords: [String],
+        documents: {
+            cv: fileDocSchema,
+            stcw: fileDocSchema,
+            eng1: fileDocSchema,
+            references: fileDocSchema,
+            passport: fileDocSchema,
+            driversLicense: fileDocSchema,
+            additionalCertificates: [{
+                name: String,
+                data: Buffer,
+                contentType: String,
+                originalName: String
+            }]
+        }
+    }
 }, {
     timestamps: true
 });

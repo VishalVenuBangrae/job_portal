@@ -4,26 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>My Applications - Yacht Crew Portal</title>
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/nca-dashboard.css">
 </head>
-<body>
-  <header class="header">
-    <div class="nav-container">
-      <a href="/jobseeker.html" class="logo">
-        <span class="logo-icon">🔗</span>
-        <span>Yacht Crew Portal</span>
-      </a>
-      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
-      <nav class="nav-links" id="navLinks">
-        <a href="/jobseeker.html" class="nav-link">Dashboard</a>
-        <a href="/jobseeker-jobs.html" class="nav-link">Browse Jobs</a>
-        <a href="/jobseeker-applications.html" class="nav-link active">My Applications</a>
-        <a href="/change-password.html" class="nav-link">Settings</a>
-        <a href="/login.html" class="nav-link" onclick="logout()">Logout</a>
-      </nav>
-    </div>
-  </header>
-
+<body class="nca-app" data-nca-role="jobseeker" data-nca-page="applications" data-nca-title="My Applications" data-nca-subtitle="Track your application status">
   <div class="container">
     <div class="stats-grid">
       <div class="stat-card">
@@ -45,7 +28,7 @@
     </div>
 
     <div class="filter-section">
-      <h3>🔍 Filter Applications</h3>
+      <h3>Filter Applications</h3>
       <div class="filter-row">
         <select id="statusFilter" class="filter-select" onchange="filterApplications()">
           <option value="">All Statuses</option>
@@ -56,8 +39,9 @@
         </select>
         <select id="categoryFilter" class="filter-select" onchange="filterApplications()">
           <option value="">All Categories</option>
-          <option value="Daywork/Freelance">Daywork/Freelance</option>
-          <option value="Deliveries">Deliveries</option>
+          <option value="Daywork">Daywork</option>
+          <option value="Freelance">Freelance</option>
+          <option value="Delivery">Delivery</option>
         </select>
         <select id="positionFilter" class="filter-select" onchange="filterApplications()">
           <option value="">All Positions</option>
@@ -101,11 +85,7 @@
       }
     });
 
-    function logout() {
-      localStorage.removeItem('token');
-      localStorage.removeItem('userType');
-      window.location.href = '/login.html';
-    }
+    function logout() { ncaLogout(); }
 
     function formatDate(dateString) {
       const date = new Date(dateString);
@@ -144,9 +124,24 @@
 
     async function loadApplications() {
       const token = localStorage.getItem('token');
-      if (!token) {
+      if (!token || localStorage.getItem('userType') !== 'jobseeker') {
         window.location.href = '/login.html';
         return;
+      }
+
+      try {
+        const profileRes = await fetch('/api/v1/profile', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (profileRes.ok) {
+          const profile = await profileRes.json();
+          if (!profile.profileComplete) {
+            window.location.href = '/crew-profile.html';
+            return;
+          }
+        }
+      } catch (e) {
+        console.error('Profile check failed:', e);
       }
 
       try {
@@ -288,5 +283,6 @@
     // Load applications when page loads
     document.addEventListener('DOMContentLoaded', loadApplications);
   </script>
+  <script src="/nca-layout.js"></script>
 </body>
 </html> 

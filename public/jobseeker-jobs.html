@@ -4,34 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Browse Jobs - Yacht Crew Portal</title>
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/nca-dashboard.css">
 </head>
-<body>
-  <header class="header">
-    <div class="nav-container">
-      <a href="/jobseeker.html" class="logo">
-        <span class="logo-icon">🔗</span>
-        <span>Yacht Crew Portal</span>
-      </a>
-      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
-      <nav class="nav-links" id="navLinks">
-        <a href="/jobseeker.html" class="nav-link">Dashboard</a>
-        <a href="/jobseeker-jobs.html" class="nav-link active">Browse Jobs</a>
-        <a href="/jobseeker-applications.html" class="nav-link">My Applications</a>
-        <a href="/change-password.html" class="nav-link">Settings</a>
-        <a href="/login.html" class="nav-link" onclick="logout()">Logout</a>
-      </nav>
-    </div>
-  </header>
-
+<body class="nca-app" data-nca-role="jobseeker" data-nca-page="jobs" data-nca-title="Browse Jobs" data-nca-subtitle="Search and apply for yacht crew positions">
   <div class="container">
     <div class="filter-section">
-      <h3>🔍 Filter Jobs</h3>
+      <h3>Filter Jobs</h3>
       <div class="filter-row">
         <select id="categoryFilter" class="filter-select" onchange="filterJobs()">
           <option value="">All Categories</option>
-          <option value="Daywork/Freelance">Daywork/Freelance</option>
-          <option value="Deliveries">Deliveries</option>
+          <option value="Daywork">Daywork</option>
+          <option value="Freelance">Freelance</option>
+          <option value="Delivery">Delivery</option>
         </select>
         <select id="positionFilter" class="filter-select" onchange="filterJobs()">
           <option value="">All Positions</option>
@@ -47,10 +31,9 @@
         </select>
         <select id="jobTypeFilter" class="filter-select" onchange="filterJobs()">
           <option value="">All Job Types</option>
-          <option value="Full-time">Full-time</option>
-          <option value="Part-time">Part-time</option>
-          <option value="Contract">Contract</option>
-          <option value="Temporary">Temporary</option>
+          <option value="Daywork">Daywork</option>
+          <option value="Freelance">Freelance</option>
+          <option value="Delivery">Delivery</option>
         </select>
         <select id="countryFilter" class="filter-select" onchange="loadFilterCities()">
           <option value="">All Countries</option>
@@ -115,11 +98,7 @@
     let allJobs = [];
     let currentJobId = null;
 
-    function logout() {
-      localStorage.removeItem('token');
-      localStorage.removeItem('userType');
-      window.location.href = '/login.html';
-    }
+    function logout() { ncaLogout(); }
 
     function formatDate(dateString) {
       const date = new Date(dateString);
@@ -402,20 +381,33 @@
 
     function openApplicationModal(jobId) {
       currentJobId = jobId;
-      document.getElementById('applicationModal').style.display = 'block';
+      const modal = document.getElementById('applicationModal');
+      modal.style.display = 'block';
+      document.body.style.overflow = 'hidden';
       document.getElementById('applicationForm').reset();
       
       // Pre-fill email if available from user data
       const userEmail = localStorage.getItem('userEmail');
       if (userEmail) {
-        document.querySelector('input[name="email"]').value = userEmail;
+        document.querySelector('#applicationModal input[name="email"]').value = userEmail;
       }
     }
 
     function closeModal() {
       document.getElementById('applicationModal').style.display = 'none';
+      document.body.style.overflow = '';
       currentJobId = null;
     }
+
+    // Expose for inline onclick handlers
+    window.openApplicationModal = openApplicationModal;
+    window.closeModal = closeModal;
+    window.filterJobs = filterJobs;
+    window.clearFilters = clearFilters;
+    window.loadFilterCities = loadFilterCities;
+    window.loadFilterPorts = loadFilterPorts;
+    window.handlePortSelection = handlePortSelection;
+    window.handleCustomPortInput = handleCustomPortInput;
 
     // Close modal when clicking outside
     window.onclick = function(event) {
@@ -425,12 +417,30 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+    async function ensureProfileComplete() {
       const token = localStorage.getItem('token');
-      if (!token) {
+      if (!token || localStorage.getItem('userType') !== 'jobseeker') {
         window.location.href = '/login.html';
-        return;
+        return false;
       }
+      const res = await fetch('/api/v1/profile', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (res.ok) {
+        const profile = await res.json();
+        if (!profile.profileComplete) {
+          window.location.href = '/crew-profile.html';
+          return false;
+        }
+      }
+      return true;
+    }
+
+    document.addEventListener('DOMContentLoaded', async function() {
+      const ok = await ensureProfileComplete();
+      if (!ok) return;
+
+      const token = localStorage.getItem('token');
 
       const applicationForm = document.getElementById('applicationForm');
       const submitBtn = document.getElementById('submitBtn');
@@ -459,6 +469,8 @@
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           if (!emailRegex.test(email)) {
             alert('Please enter a valid email address');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Submit Application';
             return;
           }
           
@@ -466,6 +478,8 @@
           const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
           if (!phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''))) {
             alert('Please enter a valid phone number');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Submit Application';
             return;
           }
           
@@ -530,5 +544,6 @@
       loadJobs();
     });
   </script>
+  <script src="/nca-layout.js"></script>
 </body>
 </html> 

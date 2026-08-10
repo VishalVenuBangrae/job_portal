@@ -66,7 +66,13 @@ const generateCode = () => Math.floor(100000 + Math.random() * 900000).toString(
 // @access  Public
 export const register = async (req, res) => {
     try {
-        const { name, email, password, userType, phone } = req.body;
+        const { name, firstName, lastName, email, password, userType, phone } = req.body;
+        const resolvedName = (name && name.trim())
+          ? name.trim()
+          : `${(firstName || '').trim()} ${(lastName || '').trim()}`.trim();
+        if (!resolvedName) {
+            return res.status(400).json({ message: 'First and last name are required' });
+        }
         let profile = {};
         if (userType === 'jobseeker' && req.file) {
             profile.resume = {
@@ -83,7 +89,7 @@ export const register = async (req, res) => {
         const emailVerificationCode = generateCode();
         // Create user
         const user = await User.create({
-            name,
+            name: resolvedName,
             email,
             password,
             userType,
@@ -106,6 +112,8 @@ export const register = async (req, res) => {
             userType: user.userType,
             token: generateToken(user._id),
             emailVerified: false,
+            profileComplete: false,
+            profileStatus: 'active',
             message: isEmailConfigured ? 'Account created. Please check your email for verification.' : 'Account created. Email verification not configured.'
         });
     } catch (error) {
@@ -213,7 +221,9 @@ export const login = async (req, res) => {
             name: user.name,
             email: user.email,
             userType: user.userType,
-            token: token
+            token: token,
+            profileComplete: user.crewProfile?.profileComplete || false,
+            profileStatus: user.crewProfile?.profileStatus || 'active'
         });
     } catch (error) {
         console.error('Login error:', error.message);

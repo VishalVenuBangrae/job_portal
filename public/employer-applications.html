@@ -4,26 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Job Applications - Yacht Crew Portal</title>
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/nca-dashboard.css">
 </head>
-<body>
-  <header class="header">
-    <div class="nav-container">
-      <a href="/employer.html" class="logo">
-        <span class="logo-icon">🔗</span>
-        <span>Yacht Crew Portal</span>
-      </a>
-      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
-      <nav class="nav-links" id="navLinks">
-        <a href="/employer.html" class="nav-link">Dashboard</a>
-        <a href="/post-job.html" class="nav-link">Post Job</a>
-        <a href="/employer-applications.html" class="nav-link active">Applications</a>
-        <a href="/change-password.html" class="nav-link">Settings</a>
-        <a href="/login.html" class="nav-link" onclick="logout()">Logout</a>
-      </nav>
-    </div>
-  </header>
-
+<body class="nca-app" data-nca-role="employer" data-nca-page="applications" data-nca-title="Applications" data-nca-subtitle="Review and manage crew applications">
   <div class="container">
     <div class="stats-grid">
       <div class="stat-card">
@@ -45,7 +28,7 @@
     </div>
 
     <div class="filter-section">
-      <h3>🔍 Filter Applications</h3>
+      <h3>Filter Applications</h3>
       <div class="filter-row">
         <select id="statusFilter" class="filter-select" onchange="filterApplications()">
           <option value="">All Statuses</option>
@@ -56,8 +39,9 @@
         </select>
         <select id="categoryFilter" class="filter-select" onchange="filterApplications()">
           <option value="">All Categories</option>
-          <option value="Daywork/Freelance">Daywork/Freelance</option>
-          <option value="Deliveries">Deliveries</option>
+          <option value="Daywork">Daywork</option>
+          <option value="Freelance">Freelance</option>
+          <option value="Delivery">Delivery</option>
         </select>
         <select id="positionFilter" class="filter-select" onchange="filterApplications()">
           <option value="">All Positions</option>
@@ -102,11 +86,7 @@
   <script>
     let allApplications = [];
 
-    function logout() {
-      localStorage.removeItem('token');
-      localStorage.removeItem('userType');
-      window.location.href = '/login.html';
-    }
+    function logout() { ncaLogout(); }
 
     function formatDate(dateString) {
       const date = new Date(dateString);
@@ -721,5 +701,6 @@
       await loadFilterCountries();
     });
   </script>
+  <script src="/nca-layout.js"></script>
 </body>
 </html> 

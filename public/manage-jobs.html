@@ -4,27 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manage Jobs - Yacht Crew Portal</title>
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/nca-dashboard.css">
 </head>
-<body>
-  <header class="header">
-    <div class="nav-container">
-      <a href="/employer.html" class="logo">
-        <span class="logo-icon">🔗</span>
-        <span>Yacht Crew Portal</span>
-      </a>
-      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
-      <nav class="nav-links" id="navLinks">
-        <a href="/employer.html" class="nav-link">Dashboard</a>
-        <a href="/post-job.html" class="nav-link">Post Job</a>
-        <a href="/employer-applications.html" class="nav-link">Applications</a>
-        <a href="/manage-jobs.html" class="nav-link active">Manage Jobs</a>
-        <a href="/change-password.html" class="nav-link">Settings</a>
-        <a href="/login.html" class="nav-link" onclick="logout()">Logout</a>
-      </nav>
-    </div>
-  </header>
-
+<body class="nca-app" data-nca-role="employer" data-nca-page="manage-jobs" data-nca-title="Manage Jobs" data-nca-subtitle="Edit, close, or delete your postings">
   <div class="container">
     <div class="stats-grid">
       <div class="stat-card">
@@ -46,7 +28,7 @@
     </div>
 
     <div class="filter-section">
-      <h3>🔍 Filter Jobs</h3>
+      <h3>Filter Jobs</h3>
       <div class="filter-row">
         <select id="statusFilter" class="filter-select" onchange="filterJobs()">
           <option value="">All Statuses</option>
@@ -55,8 +37,9 @@
         </select>
         <select id="categoryFilter" class="filter-select" onchange="filterJobs()">
           <option value="">All Categories</option>
-          <option value="Daywork/Freelance">Daywork/Freelance</option>
-          <option value="Deliveries">Deliveries</option>
+          <option value="Daywork">Daywork</option>
+          <option value="Freelance">Freelance</option>
+          <option value="Delivery">Delivery</option>
         </select>
         <select id="positionFilter" class="filter-select" onchange="filterJobs()">
           <option value="">All Positions</option>
@@ -132,11 +115,12 @@
            </div>
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">Job Category</label>
+              <label class="form-label">Job Type</label>
               <select id="editJobCategory" class="form-select" required onchange="updateEditPositions()">
                 <option value="">Select Category</option>
-                <option value="Daywork/Freelance">Daywork/Freelance</option>
-                <option value="Deliveries">Deliveries</option>
+                <option value="Daywork">Daywork</option>
+                <option value="Freelance">Freelance</option>
+                <option value="Delivery">Delivery</option>
               </select>
             </div>
             <div class="form-group">
@@ -148,13 +132,12 @@
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">Job Type</label>
+              <label class="form-label">Job Schedule Type</label>
               <select id="editJobType" class="form-select" required>
                 <option value="">Select Type</option>
-                <option value="Full-time">Full-time</option>
-                <option value="Part-time">Part-time</option>
-                <option value="Contract">Contract</option>
-                <option value="Temporary">Temporary</option>
+                <option value="Daywork">Daywork</option>
+                <option value="Freelance">Freelance</option>
+                <option value="Delivery">Delivery</option>
               </select>
             </div>
             <div class="form-group">
@@ -190,11 +173,7 @@
     let allJobs = [];
     let currentEditJob = null;
 
-    function logout() {
-      localStorage.removeItem('token');
-      localStorage.removeItem('userType');
-      window.location.href = '/login.html';
-    }
+    function logout() { ncaLogout(); }
 
     function formatDate(dateString) {
       const date = new Date(dateString);
@@ -236,12 +215,12 @@
       const positionSelect = document.getElementById('editPosition');
       positionSelect.innerHTML = '<option value="">Select Position</option>';
       
-      if (category === 'Daywork/Freelance') {
+      if (category === 'Daywork' || category === 'Freelance' || category === 'Daywork/Freelance') {
         const positions = ['Captain', 'Engineer', 'Bosun', 'Mate', 'Deckhand', 'Chef/crew cook', 'Chief Stewardess', '2nd Stewardess'];
         positions.forEach(pos => {
           positionSelect.innerHTML += `<option value="${pos}">${pos}</option>`;
         });
-      } else if (category === 'Deliveries') {
+      } else if (category === 'Delivery' || category === 'Deliveries') {
         const positions = ['Captain', 'Mate', 'Stewardess', 'Chef'];
         positions.forEach(pos => {
           positionSelect.innerHTML += `<option value="${pos}">${pos}</option>`;
@@ -1025,5 +1004,6 @@
       if (editCustomPort) editCustomPort.addEventListener('input', updateEditLocationDisplay);
     });
   </script>
+  <script src="/nca-layout.js"></script>
 </body>
 </html> 

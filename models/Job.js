@@ -61,13 +61,16 @@ const jobSchema = new mongoose.Schema({
     },
     jobType: {
         type: String,
-        enum: ['Full-time', 'Part-time', 'Contract', 'Temporary'],
+        enum: ['Daywork', 'Freelance', 'Delivery'],
         required: true
     },
     jobCategory: {
         type: String,
-        enum: ['Daywork/Freelance', 'Deliveries'],
-        required: true
+        enum: ['Daywork', 'Freelance', 'Delivery', 'Daywork/Freelance', 'Deliveries']
+    },
+    vesselFlag: {
+        type: String,
+        enum: ['US flagged', 'Foreign Flagged']
     },
     position: {
         type: String,

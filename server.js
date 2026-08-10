@@ -10,6 +10,7 @@ import authRoutes from './routes/authRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
 import locationRoutes from './routes/locationRoutes.js';
 import testRoutes from './routes/testRoutes.js';
+import profileRoutes from './routes/profileRoutes.js';
 import multer from 'multer';
 import {
   createRateLimiters,
@@ -21,6 +22,7 @@ import {
   securityErrorHandler,
   securityLogger
 } from './config/security.js';
+import { startProfileInactivityScheduler } from './services/profileInactivityService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -92,6 +94,7 @@ app.use('/api/v1/test', testRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/jobs', jobRoutes);
 app.use('/api/v1/locations', locationRoutes);
+app.use('/api/v1/profile', profileRoutes);
 
 // Error handling middleware
 app.use(securityErrorHandler);
@@ -105,6 +108,7 @@ app.use('*', (req, res) => {
 const startServer = async () => {
   try {
     await connectDB();
+    startProfileInactivityScheduler();
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
     });

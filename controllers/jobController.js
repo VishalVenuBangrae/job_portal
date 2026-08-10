@@ -4,8 +4,8 @@ import User from '../models/User.js';
 
 export const createJob = async (req, res) => {
   try {
-    const { title, company, location, description, requirements, salary, jobType, jobCategory, position } = req.body;
-    if (!title || !company || !location || !description || !salary || !jobType || !jobCategory || !position) {
+    const { title, company, location, description, requirements, salary, jobType, jobCategory, position, vesselFlag } = req.body;
+    if (!title || !company || !location || !description || !salary || !jobType || !position || !vesselFlag) {
       return res.status(400).json({ message: 'All required fields must be provided' });
     }
 
@@ -22,8 +22,9 @@ export const createJob = async (req, res) => {
       requirements,
       salary,
       jobType,
-      jobCategory,
+      jobCategory: jobCategory || jobType,
       position,
+      vesselFlag,
       employer: req.user._id
     });
     await job.save();

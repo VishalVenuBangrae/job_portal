@@ -4,30 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Post New Job - Yacht Crew Portal</title>
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/nca-dashboard.css">
 </head>
-<body>
-  <header class="header">
-    <div class="nav-container">
-      <a href="/employer.html" class="logo">
-        <span class="logo-icon">🔗</span>
-        <span>Yacht Crew Portal</span>
-      </a>
-      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
-      <nav class="nav-links" id="navLinks">
-        <a href="/employer.html" class="nav-link">Dashboard</a>
-        <a href="/post-job.html" class="nav-link active">Post Job</a>
-        <a href="/employer-applications.html" class="nav-link">Applications</a>
-        <a href="/change-password.html" class="nav-link">Settings</a>
-        <a href="/login.html" class="nav-link" onclick="logout()">Logout</a>
-      </nav>
-    </div>
-  </header>
-
+<body class="nca-app" data-nca-role="employer" data-nca-page="post-job" data-nca-title="Post New Job" data-nca-subtitle="Create a new crew position listing">
   <div class="container">
     <div class="card">
       <div class="card-header">
-        <h2>🚀 Post New Job</h2>
+        <h2>Post New Job</h2>
       </div>
       <div class="card-body">
         <form id="postJobForm">
@@ -68,31 +51,35 @@
               <label class="form-label">Job Type *</label>
               <select name="jobType" class="form-select" required>
                 <option value="">Select Job Type</option>
-                <option value="Full-time">Full-time</option>
-                <option value="Part-time">Part-time</option>
-                <option value="Contract">Contract</option>
-                <option value="Temporary">Temporary</option>
+                <option value="Daywork">Daywork</option>
+                <option value="Freelance">Freelance</option>
+                <option value="Delivery">Delivery</option>
               </select>
             </div>
           </div>
           
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">Job Category *</label>
-              <select name="jobCategory" class="form-select" required onchange="updatePositionOptions()">
-                <option value="">Select Category</option>
-                <option value="Daywork/Freelance">Daywork/Freelance</option>
-                <option value="Deliveries">Deliveries</option>
+              <label class="form-label">Vessel Flag *</label>
+              <select name="vesselFlag" class="form-select" required>
+                <option value="">Select Vessel Flag</option>
+                <option value="US flagged">US flagged</option>
+                <option value="Foreign Flagged">Foreign Flagged</option>
               </select>
-              <small style="color: var(--text-light); margin-top: 4px; display: block;">
-                Daywork/Freelance: Regular yacht crew positions<br>
-                Deliveries: Yacht delivery and transit positions
-              </small>
             </div>
             <div class="form-group">
               <label class="form-label">Position *</label>
-              <select name="position" class="form-select" required id="positionSelect">
-                <option value="">Select Category First</option>
+              <select name="position" class="form-select" required>
+                <option value="">Select Position</option>
+                <option value="Captain">Captain</option>
+                <option value="Engineer">Engineer</option>
+                <option value="Bosun">Bosun</option>
+                <option value="Mate">Mate</option>
+                <option value="Deckhand">Deckhand</option>
+                <option value="Chef/crew cook">Chef/crew cook</option>
+                <option value="Chief Stewardess">Chief Stewardess</option>
+                <option value="2nd Stewardess">2nd Stewardess</option>
+                <option value="Stewardess">Stewardess</option>
               </select>
             </div>
           </div>
@@ -122,11 +109,7 @@
   </div>
 
   <script>
-    function logout() {
-      localStorage.removeItem('token');
-      localStorage.removeItem('userType');
-      window.location.href = '/login.html';
-    }
+    function logout() { ncaLogout(); }
 
     // Location handling functions
     async function loadCountries() {
@@ -292,35 +275,6 @@
       displayInput.value = displayText;
     }
 
-    function updatePositionOptions() {
-      const categorySelect = document.querySelector('select[name="jobCategory"]');
-      const positionSelect = document.getElementById('positionSelect');
-      const category = categorySelect.value;
-      
-      positionSelect.innerHTML = '<option value="">Select Position</option>';
-      
-      if (category === 'Daywork/Freelance') {
-        const positions = [
-          'Captain', 'Engineer', 'Bosun', 'Mate', 'Deckhand', 
-          'Chef/crew cook', 'Chief Stewardess', '2nd Stewardess'
-        ];
-        positions.forEach(pos => {
-          const option = document.createElement('option');
-          option.value = pos;
-          option.textContent = pos;
-          positionSelect.appendChild(option);
-        });
-      } else if (category === 'Deliveries') {
-        const positions = ['Captain', 'Mate', 'Stewardess', 'Chef/crew cook'];
-        positions.forEach(pos => {
-          const option = document.createElement('option');
-          option.value = pos;
-          option.textContent = pos;
-          positionSelect.appendChild(option);
-        });
-      }
-    }
-
     document.addEventListener('DOMContentLoaded', function() {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -385,8 +339,9 @@
               port: finalPort,
               displayName: formData.get('locationDisplay')
             },
-            jobCategory: formData.get('jobCategory'),
+            jobCategory: formData.get('jobType'),
             position: formData.get('position'),
+            vesselFlag: formData.get('vesselFlag'),
             description: formData.get('description'),
             requirements: formData.get('requirements').split(',').map(req => req.trim()).filter(req => req),
             salary: formData.get('salary'),
@@ -428,5 +383,6 @@
       }
     });
   </script>
+  <script src="/nca-layout.js"></script>
 </body>
 </html> 
