@@ -94,7 +94,7 @@ export const helmetConfig = helmet({
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'", "'unsafe-inline'"],
       scriptSrcAttr: ["'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
+      imgSrc: ["'self'", "data:", "blob:", "https:"],
       connectSrc: ["'self'"],
       fontSrc: ["'self'"],
       objectSrc: ["'none'"],
@@ -104,7 +104,7 @@ export const helmetConfig = helmet({
       childSrc: ["'none'"],
       formAction: ["'self'"],
       baseUri: ["'self'"],
-      upgradeInsecureRequests: []
+      upgradeInsecureRequests: process.env.NODE_ENV==='production'?[]:null
     },
   },
   crossOriginEmbedderPolicy: false,
@@ -130,7 +130,7 @@ export const corsConfig = {
     ? [process.env.ALLOWED_ORIGIN || 'https://yourdomain.com'] 
     : ['http://localhost:8080', 'http://127.0.0.1:8080'],
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   exposedHeaders: ['X-Total-Count'],
   maxAge: 86400 // 24 hours
@@ -242,7 +242,8 @@ export const securityErrorHandler = (err, req, res, next) => {
     ? 'An error occurred' 
     : err.message;
   
-  res.status(500).json({ error: message });
+  const status=err.status || (['ValidationError','CastError','MulterError'].includes(err.name)?400:500);
+  res.status(status).json({ message:status<500?err.message:message });
 };
 
 // Request logging (security-focused)

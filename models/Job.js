@@ -1,141 +1,184 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const jobSchema = new mongoose.Schema({
+const jobSchema = new mongoose.Schema(
+  {
     title: {
-        type: String,
-        required: [true, 'Please provide a job title'],
-        trim: true
+      type: String,
+      required: [true, "Please provide a job title"],
+      trim: true,
     },
     company: {
-        type: String,
-        required: [true, 'Please provide a company name'],
-        trim: true
+      type: String,
+      default: "",
+      trim: true,
     },
     location: {
-        country: {
-            type: String,
-            required: [true, 'Please provide a country'],
-            trim: true
+      country: {
+        type: String,
+        required: [true, "Please provide a country"],
+        trim: true,
+      },
+      city: {
+        type: String,
+        required: [true, "Please provide a city"],
+        trim: true,
+      },
+      port: {
+        type: String,
+        trim: true,
+      },
+      region: {
+        type: String,
+        trim: true,
+      },
+      coordinates: {
+        latitude: {
+          type: Number,
+          min: -90,
+          max: 90,
         },
-        city: {
-            type: String,
-            required: [true, 'Please provide a city'],
-            trim: true
+        longitude: {
+          type: Number,
+          min: -180,
+          max: 180,
         },
-        port: {
-            type: String,
-            trim: true
-        },
-        region: {
-            type: String,
-            trim: true
-        },
-        coordinates: {
-            latitude: {
-                type: Number,
-                min: -90,
-                max: 90
-            },
-            longitude: {
-                type: Number,
-                min: -180,
-                max: 180
-            }
-        },
-        displayName: {
-            type: String,
-            required: [true, 'Please provide a location display name'],
-            trim: true
-        }
+      },
+      displayName: {
+        type: String,
+        required: [true, "Please provide a location display name"],
+        trim: true,
+      },
     },
     description: {
-        type: String,
-        required: [true, 'Please provide a job description']
+      type: String,
+      required: [true, "Please provide a job description"],
     },
-    requirements: [{
-        type: String
-    }],
-    salary: {
+    requirements: [
+      {
         type: String,
-        required: [true, 'Please provide salary information']
+      },
+    ],
+    salary: {
+      type: String,
+      required: [true, "Please provide salary information"],
     },
     jobType: {
-        type: String,
-        enum: ['Daywork', 'Freelance', 'Delivery'],
-        required: true
+      type: String,
+      enum: ["Daywork", "Freelance", "Delivery"],
+      required: true,
     },
     jobCategory: {
-        type: String,
-        enum: ['Daywork', 'Freelance', 'Delivery', 'Daywork/Freelance', 'Deliveries']
+      type: String,
+      enum: [
+        "Daywork",
+        "Freelance",
+        "Delivery",
+        "Daywork/Freelance",
+        "Deliveries",
+      ],
     },
     vesselFlag: {
-        type: String,
-        enum: ['US flagged', 'Foreign Flagged']
+      type: String,
+      enum: ["US flagged", "Foreign Flagged"],
     },
     position: {
-        type: String,
-        enum: [
-            // Daywork/Freelance positions
-            'Captain', 'Engineer', 'Bosun', 'Mate', 'Deckhand', 
-            'Chef/crew cook', 'Chief Stewardess', '2nd Stewardess',
-            // Delivery positions
-            'Stewardess'
-        ],
-        required: true
+      type: String,
+      enum: [
+        // Daywork/Freelance positions
+        "Captain",
+        "Engineer",
+        "Bosun",
+        "Mate",
+        "Deckhand",
+        "Chef/crew cook",
+        "Chief Stewardess",
+        "2nd Stewardess",
+        // Delivery positions
+        "Stewardess",
+        "Chef",
+        "Interior",
+        "Chief Stew",
+        "Exterior",
+        "Deck hand",
+      ],
+      required: true,
     },
+    startDate: Date,
+    endDate: Date,
+    crewNeeded: { type: Number, min: 1, max: 100 },
+    department: {
+      type: String,
+      enum: ["Deck", "Interior", "Galley", "Engineering"],
+    },
+    tags: [String],
+    requiredCertificates: [{ type: String, enum: ["stcw", "eng1"] }],
+    contacts: [
+      {
+        crew: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        name: String,
+        unlockedAt: { type: Date, default: Date.now },
+        employerOutcome: String,
+        crewOutcome: String,
+        followupSentAt: Date,
+      },
+    ],
     employer: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-    applications: [{
+    applications: [
+      {
         applicant: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
         },
         email: {
-            type: String,
-            required: true
+          type: String,
+          required: true,
         },
         phone: {
-            type: String
+          type: String,
         },
         resume: {
-            data: {
-                type: Buffer,
-                required: true
-            },
-            originalName: {
-                type: String,
-                required: true
-            },
-            mimetype: {
-                type: String,
-                required: true
-            }
+          data: {
+            type: Buffer,
+            required: true,
+          },
+          originalName: {
+            type: String,
+            required: true,
+          },
+          mimetype: {
+            type: String,
+            required: true,
+          },
         },
         coverLetter: {
-            type: String
+          type: String,
         },
         status: {
-            type: String,
-            enum: ['pending', 'reviewed', 'accepted', 'rejected'],
-            default: 'pending'
+          type: String,
+          enum: ["pending", "reviewed", "accepted", "rejected"],
+          default: "pending",
         },
         appliedAt: {
-            type: Date,
-            default: Date.now
-        }
-    }],
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
     status: {
-        type: String,
-        enum: ['active', 'closed'],
-        default: 'active'
-    }
-}, {
-    timestamps: true
-});
+      type: String,
+      enum: ["active", "closed", "filled", "cancelled", "expired"],
+      default: "active",
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
 
-const Job = mongoose.model('Job', jobSchema);
+const Job = mongoose.model("Job", jobSchema);
 
-export default Job; 
+export default Job;

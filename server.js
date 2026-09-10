@@ -9,7 +9,8 @@ import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
 import locationRoutes from './routes/locationRoutes.js';
-import testRoutes from './routes/testRoutes.js';
+import portalRoutes from './routes/portalRoutes.js';
+import mongoSanitize from 'express-mongo-sanitize';
 import profileRoutes from './routes/profileRoutes.js';
 import multer from 'multer';
 import {
@@ -50,8 +51,7 @@ app.use(cors(corsConfig));
 // Security headers
 app.use(securityHeaders);
 
-// Input validation
-app.use(validateInput);
+
 
 // Security logging
 app.use(securityLogger);
@@ -59,6 +59,9 @@ app.use(securityLogger);
 // Body parser with limits
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(mongoSanitize());
+app.use(validateInput);
+app.use('/api', (req,res,next)=>{res.set('Cache-Control','no-store');next();});
 
 // Logging middleware (production-safe)
 if (process.env.NODE_ENV === 'development') {
@@ -76,7 +79,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Static files
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname,'public')));
 
 // Multer configuration for file uploads
 const storage = multer.memoryStorage();
@@ -90,7 +93,8 @@ const upload = multer({
 app.locals.upload = upload;
 
 // API Routes
-app.use('/api/v1/test', testRoutes);
+app.use('/api/v1/portal', portalRoutes);
+app.get('/api/health',(req,res)=>res.json({status:'ok'}));
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/jobs', jobRoutes);
 app.use('/api/v1/locations', locationRoutes);
@@ -118,4 +122,5 @@ const startServer = async () => {
   }
 };
 
-startServer();
+export { app };
+if (process.argv[1] && path.resolve(process.argv[1]) === __filename) startServer();

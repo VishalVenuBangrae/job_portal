@@ -1,7 +1,7 @@
 {
   "name": "job_portal",
   "version": "1.0.0",
-  "description": "Job portal for Yatch Daywork",
+  "description": "Nauti Crew Agency yacht daywork matching portal",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -16,7 +16,10 @@
     "security:audit": "npm audit",
     "security:fix": "npm audit fix",
     "security:check": "npm audit --audit-level=high",
-    "test:security": "npm run security:check && npm run security:audit"
+    "test:security": "npm run security:check && npm run security:audit",
+    "test": "node --test tests/*.test.js",
+    "test:unit": "node --test tests/matching.test.js",
+    "preview": "node scripts/preview.js"
   },
   "author": "Vishal Venu Bangrae",
   "license": "ISC",
@@ -34,10 +37,20 @@
     "mongoose": "^8.10.1",
     "morgan": "^1.10.0",
     "multer": "^2.0.1",
-    "nodemailer": "^6.10.1",
+    "nodemailer": "^10.0.3",
     "nodemon": "^3.1.9",
     "twilio": "^4.23.0",
     "validator": "^13.12.0",
     "xss-clean": "^0.1.4"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^11.2.0",
+    "supertest": "^7.2.2"
+  },
+  "overrides": {
+    "qs": "^6.16.0"
+  },
+  "engines": {
+    "node": ">=20.19.0"
   }
 }

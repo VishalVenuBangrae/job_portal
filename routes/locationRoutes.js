@@ -24,9 +24,11 @@ router.get('/api-ports', fetchYachtPortsFromAPI);
 router.get('/search', searchLocations);
 router.get('/popular', getPopularLocations);
 
+// Mutations are restricted to explicitly configured staff accounts.
+const staffOnly=(req,res,next)=> (process.env.ADMIN_EMAILS || '').split(',').map(s=>s.trim()).includes(req.user.email)?next():res.status(403).json({message:'Staff access required'});
 // Protected routes (admin only)
-router.get('/all', protect, getAllLocations);
-router.post('/add', protect, addLocation);
-router.post('/sync-api', protect, syncYachtPortsFromAPI);
+router.get('/all', protect, staffOnly, getAllLocations);
+router.post('/add', protect, staffOnly, addLocation);
+router.post('/sync-api', protect, staffOnly, syncYachtPortsFromAPI);
 
 export default router;

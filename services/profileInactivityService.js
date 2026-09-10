@@ -1,84 +1,81 @@
-import User from '../models/User.js';
-import { sendEmail } from '../controllers/authController.js';
-
-const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
-const REMINDER_DAYS_MS = 16 * 24 * 60 * 60 * 1000;
-
-export async function checkProfileInactivity() {
-  const now = Date.now();
-  const thirtyDaysAgo = new Date(now - THIRTY_DAYS_MS);
-  const sixteenDaysAgo = new Date(now - REMINDER_DAYS_MS);
-
-  const usersToDeactivate = await User.find({
-    userType: 'jobseeker',
-    'crewProfile.profileComplete': true,
-    'crewProfile.profileStatus': 'active',
-    'crewProfile.profileLastActive': { $lte: thirtyDaysAgo }
+import User from "../models/User.js";
+import Notification from "../models/Notification.js";
+import { sendEmail } from "../controllers/authController.js";
+import { escapeHtml } from "./http.js";
+import { checkHiringFollowups } from "./followupService.js";
+const DAY = 86400000;
+export async function checkProfileInactivity(now = new Date()) {
+  const inactiveBefore = new Date(+now - 30 * DAY),
+    remindBefore = new Date(+now - 23 * DAY);
+  let deactivated = 0,
+    reminded = 0;
+  const users = await User.find({
+    userType: "jobseeker",
+    "crewProfile.profileComplete": true,
+    "crewProfile.profileStatus": "active",
+    "crewProfile.profileLastActive": { $lte: remindBefore },
   });
-
-  for (const user of usersToDeactivate) {
-    user.crewProfile.profileStatus = 'inactive';
-    await user.save();
-
-    await sendEmail(
-      user.email,
-      'Your Nauti Crew Agency profile is now inactive',
-      `<p>Hi ${user.crewProfile.firstName || user.name},</p>
-       <p>Your crew profile has been automatically set to <strong>Inactive</strong> because it has not been updated in 30 days.</p>
-       <p>To become available for work again, please log in and update your profile status to Active.</p>
-       <p>— Nauti Crew Agency</p>`
+  for (const user of users) {
+    const stale = user.crewProfile.profileLastActive <= inactiveBefore;
+    if (!stale && user.crewProfile.profileReminderSentAt) continue;
+    const message = stale
+      ? "Your profile is now inactive. Update your availability to appear in matches again."
+      : "Please confirm your availability and location within 7 days to keep your profile active.";
+    if (stale) {
+      const changed = await User.updateOne(
+        {
+          _id: user._id,
+          "crewProfile.profileStatus": "active",
+          "crewProfile.profileLastActive": user.crewProfile.profileLastActive,
+        },
+        { $set: { "crewProfile.profileStatus": "inactive" } },
+      );
+      if (!changed.modifiedCount) continue;
+      deactivated++;
+    }
+    await Notification.updateOne(
+      { user: user._id, message, createdAt: { $gte: remindBefore } },
+      { $setOnInsert: { user: user._id, message } },
+      { upsert: true },
     );
-  }
-
-  const usersToRemind = await User.find({
-    userType: 'jobseeker',
-    'crewProfile.profileComplete': true,
-    'crewProfile.profileStatus': 'active',
-    'crewProfile.profileLastActive': { $lte: sixteenDaysAgo, $gt: thirtyDaysAgo },
-    $or: [
-      { 'crewProfile.profileReminderSentAt': { $exists: false } },
-      { 'crewProfile.profileReminderSentAt': null }
-    ]
-  });
-
-  for (const user of usersToRemind) {
-    user.crewProfile.profileReminderSentAt = new Date();
-    await user.save();
-
-    await sendEmail(
-      user.email,
-      'Reminder: Update your Nauti Crew Agency profile',
-      `<p>Hi ${user.crewProfile.firstName || user.name},</p>
-       <p>We notice that you have not logged into your profile in some time.</p>
-       <p>Please log in and update:</p>
-       <ul>
-         <li>your current job search status (active/inactive)</li>
-         <li>your current location</li>
-       </ul>
-       <p>Please also ensure your CV is up to date and add any new references.</p>
-       <p>If we don't hear from you in the next <strong>14 days</strong>, your profile status will be automatically set to <strong>Inactive</strong>.</p>
-       <p>— Nauti Crew Agency</p>`
-    );
-  }
-
-  return {
-    deactivated: usersToDeactivate.length,
-    reminded: usersToRemind.length
-  };
-}
-
-export function startProfileInactivityScheduler() {
-  const run = async () => {
     try {
-      const result = await checkProfileInactivity();
-      if (result.deactivated || result.reminded) {
-        console.log(`Profile inactivity check: ${result.deactivated} deactivated, ${result.reminded} reminded`);
+      await sendEmail(
+        user.email,
+        stale
+          ? "Your NCA profile is now inactive"
+          : "Confirm your NCA availability",
+        `<p>Hi ${escapeHtml(user.crewProfile.firstName || user.name)},</p><p>${message}</p><p>Please also check that your CV and written references are current.</p>`,
+      );
+      if (!stale) {
+        await User.updateOne(
+          {
+            _id: user._id,
+            "crewProfile.profileLastActive": user.crewProfile.profileLastActive,
+          },
+          { $set: { "crewProfile.profileReminderSentAt": now } },
+        );
+        reminded++;
       }
     } catch (err) {
-      console.error('Profile inactivity check failed:', err.message);
+      console.error("Availability email delivery failed:", err.message);
+    }
+  }
+  return { deactivated, reminded };
+}
+export function startProfileInactivityScheduler() {
+  let running = false;
+  const run = async () => {
+    if (running) return;
+    running = true;
+    try {
+      await checkProfileInactivity();
+      await checkHiringFollowups();
+    } catch (e) {
+      console.error("NCA scheduled check failed:", e.message);
+    } finally {
+      running = false;
     }
   };
-
   run();
-  setInterval(run, 24 * 60 * 60 * 1000);
+  return setInterval(run, 24 * 60 * 60 * 1000);
 }

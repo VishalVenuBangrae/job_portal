@@ -16,8 +16,15 @@ import {
 import { protect } from '../middleware/authMiddleware.js';
 import { employerOnly, jobseekerOnly, jobOwnerOnly } from '../middleware/roleMiddleware.js';
 
+import {getMatches,unlockCrew,getContacts,contactDocument,matchPhoto,setOutcome} from '../controllers/matchController.js';
 const router = express.Router();
 
+router.get('/:id/matches',protect,employerOnly,getMatches);
+router.post('/:id/contacts/:crewId',protect,employerOnly,unlockCrew);
+router.get('/:id/contacts',protect,employerOnly,getContacts);
+router.get('/:id/contacts/:crewId/documents/:docType',protect,employerOnly,contactDocument);
+router.get('/:id/matches/:crewId/photo',protect,employerOnly,matchPhoto);
+router.post('/:id/outcomes/:crewId',protect,setOutcome);
 // Public
 router.get('/', getJobs);
 

@@ -20,12 +20,14 @@ export const protect = async (req, res, next) => {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
             // Get user from token
-            req.user = await User.findById(decoded.id).select('-password');
+            req.user = await User.findById(decoded.id).select('-password -emailVerificationCode -resetEmailCode -profile.resume.data');
             
             if (!req.user) {
                 return res.status(401).json({ message: 'User not found' });
             }
 
+            if (!req.user.emailVerified) return res.status(403).json({message:'Please verify your email before continuing'});
+            if ((decoded.tokenVersion || 0)!==(req.user.tokenVersion || 0)) return res.status(401).json({message:'Please sign in again'});
             next();
         } catch (error) {
             res.status(401).json({ message: 'Not authorized, token failed' });
