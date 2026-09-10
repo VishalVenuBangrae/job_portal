@@ -1,8 +1,10 @@
+import { readFileSync } from "node:fs";
 // Disposable local preview. Never reads or connects to the deployment database.
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import { fileURLToPath } from "node:url";
 process.env.NODE_ENV = "test";
+process.env.ADMIN_EMAILS = "admin@example.test";
 process.env.JWT_SECRET = "disposable-preview-secret-not-for-deployment-123";
 process.env.MONGOMS_DOWNLOAD_DIR = fileURLToPath(
   new URL("../../../work/mongodb-binaries/", import.meta.url),
@@ -21,6 +23,16 @@ const employer = await User.create({
   userType: "employer",
   emailVerified: true,
   vessel: { name: "Demo Vessel", callSign: "DEMO" },
+});
+await User.create({
+  name: "NCA Admin",
+  email: "admin@example.test",
+  phone: "+15550101999",
+  password,
+  userType: "employer",
+  emailVerified: true,
+  vessel: { name: "NCA Administration", callSign: "ADMIN" },
+  employerApproval: { status: "approved", source: "staff" },
 });
 const doc = {
   data: Buffer.from("%PDF-1.4\nDemo document only\n%%EOF"),
@@ -72,6 +84,13 @@ for (const [i, name, position] of [
         "Crew cooking",
       ],
       documents: {
+        photo: {
+          data: readFileSync(
+            new URL("../public/images/nca-logo.png", import.meta.url),
+          ),
+          contentType: "image/png",
+          originalName: "sample-logo-photo.png",
+        },
         cv: doc,
         stcw: doc,
         eng1: doc,

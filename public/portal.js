@@ -151,6 +151,9 @@ function shell(content) {
         ["jobseeker-applications.html", "My applications", "applications"],
         ["crew-profile.html", "My profile", "profile"],
       ];
+  nav.push(["notifications.html", "Notifications", "bell"]);
+  if (me.isStaff)
+    nav.push(["admin-approvals.html", "Employer approvals", "shield"]);
   const title =
     nav.find((n) => n[0] === page)?.[1] ||
     {
@@ -159,7 +162,14 @@ function shell(content) {
       "report-issue.html": "Support",
     }[page] ||
     "Daywork";
-  document.body.innerHTML = `<a href="#main" class="skip">Skip to content</a><div class="shell"><aside class="sidebar">${brand}<div class="nav-label">${employer ? "Vessel workspace" : "Crew workspace"}</div><nav class="nav-links" aria-label="Main navigation">${nav.map(([url, label, i]) => `<a href="/${url}" class="${page === url ? "active" : ""}" ${page === url ? 'aria-current="page"' : ""}>${icon(i)}${label}</a>`).join("")}</nav><div class="sidebar-footer"><div class="sidebar-note">${icon("shield")}<strong>${employer ? "Your vessel. Your privacy." : "Your next day starts here."}</strong>${employer ? "Vessel identity stays private on the crew job board." : "Keep your availability current to appear in relevant matches."}</div><nav class="nav-links"><a href="/report-issue.html">${icon("help")}Help & report an issue</a><a href="/change-password.html">${icon("settings")}Account settings</a></nav><button id="logout">${icon("logout")}Sign out</button></div></aside><div class="workspace"><header class="topbar"><button class="mobile-menu" aria-label="Open navigation" aria-expanded="false">${icon("menu")}</button><span class="breadcrumb">${employer ? "Employer" : "Crew"} workspace <span aria-hidden="true"> / </span> <strong>${title}</strong></span><div class="user-block"><small>${employer ? esc(me.vessel?.name || "Complete vessel details") : esc(me.name)}</small><span class="avatar">${esc(me.name?.[0] || "N")}</span></div></header><main id="main" class="content">${content}</main></div></div>`;
+  document.body.innerHTML = `<a href="#main" class="skip">Skip to content</a><div class="shell"><aside class="sidebar"><button type="button" class="sidebar-close" aria-label="Close navigation">Close ×</button>${brand}<div class="nav-label">${employer ? "Vessel workspace" : "Crew workspace"}</div><nav class="nav-links" aria-label="Main navigation">${nav.map(([url, label, i]) => `<a href="/${url}" class="${page === url ? "active" : ""}" ${page === url ? 'aria-current="page"' : ""}>${icon(i)}${label}</a>`).join("")}</nav><div class="sidebar-footer"><div class="sidebar-note">${icon("shield")}<strong>${employer ? "Your vessel. Your privacy." : "Your next day starts here."}</strong>${employer ? "Vessel identity stays private on the crew job board." : "Keep your availability current to appear in relevant matches."}</div><nav class="nav-links"><a href="/report-issue.html">${icon("help")}Help & report an issue</a><a href="/change-password.html">${icon("settings")}Account settings</a></nav><button id="logout">${icon("logout")}Sign out</button></div></aside><div class="workspace"><header class="topbar"><button class="mobile-menu" aria-label="Open navigation" aria-expanded="false">${icon("menu")}</button><span class="breadcrumb">${employer ? "Employer" : "Crew"} workspace <span aria-hidden="true"> / </span> <strong>${title}</strong></span><div class="user-block"><a class="notification-link" href="/notifications.html" aria-label="Notifications">${icon("bell")}<span class="notification-count" id="notification-count" hidden></span></a><small>${employer ? esc(me.vessel?.name || "Complete vessel details") : esc(me.name)}</small>${me.hasPhoto ? `<img class="topbar-photo" data-own-photo alt="Your profile photo">` : `<span class="avatar">${esc(me.name?.[0] || "N")}</span>`}</div></header><main id="main" class="content">${content}</main></div></div>`;
+  $(".sidebar-close").onclick = () => {
+    $(".sidebar").classList.remove("is-open");
+    $(".mobile-menu").setAttribute("aria-expanded", "false");
+    $(".mobile-menu").focus();
+  };
+  loadOwnPhotos();
+  refreshNotificationCount();
   $("#logout").onclick = () => {
     localStorage.clear();
     location.href = "/login.html";
@@ -220,29 +230,7 @@ function auth() {
       }
     });
   } else if (page === "signup.html") {
-    const role =
-      new URLSearchParams(location.search).get("role") === "employer"
-        ? "employer"
-        : "jobseeker";
-    authLayout(
-      "Find your place on board",
-      "Create your account. We’ll verify your email before you continue.",
-      `<form id="auth"><div class="checks"><label class="check"><input type="radio" name="userType" value="jobseeker" ${role === "jobseeker" ? "checked" : ""}>I’m crew</label><label class="check"><input type="radio" name="userType" value="employer" ${role === "employer" ? "checked" : ""}>I’m hiring</label></div><div class="form-grid">${field("firstName", "First name", "text", "", 'required autocomplete="given-name"')}${field("lastName", "Last name", "text", "", 'required autocomplete="family-name"')}</div>${field("email", "Email address", "email", "", 'required autocomplete="email"')}${field("phone", "Phone number", "tel", "", 'required autocomplete="tel"')}${field("password", "Password", "password", "", 'required minlength="8" autocomplete="new-password"')}<small>Use at least 8 characters.</small><div id="vessel-fields" class="panel" style="margin-top:20px">${field("vesselName", "Vessel name")}${field("callSign", "Call sign")}${field("mmsi", "MMSI (alternative to call sign)", "text", "", 'pattern="[0-9]{9}"')}${field("imo", "IMO (optional)")}<small>Vessel identity is kept private from crew.</small></div><label class="check" style="margin:20px 0"><input type="checkbox" name="termsAccepted" value="true" required><span>I accept the <a id="terms-link" href="/terms.html?role=${role}" target="_blank">terms for my account</a>.</span></label><button type="submit" class="btn primary">Create account ${icon("arrow")}</button></form><p class="auth-links">Already registered? <a href="/login.html">Sign in</a></p>`,
-    );
-    const toggle = () => {
-      const employer = $("input[name=userType]:checked").value === "employer";
-      $("#vessel-fields").hidden = !employer;
-      $("#vesselName").required = employer;
-      $("#terms-link").href =
-        `/terms.html?role=${employer ? "employer" : "jobseeker"}`;
-    };
-    $$("input[name=userType]").forEach((x) => (x.onchange = toggle));
-    toggle();
-    bindForm("#auth", async (f) => {
-      await api("/auth/register", { method: "POST", body: new FormData(f) });
-      localStorage.pendingVerifyEmail = f.email.value;
-      location.href = "/verify-email.html";
-    });
+    return signupFlow();
   } else if (page === "verify-email.html") {
     authLayout(
       "Check your inbox",
@@ -690,7 +678,7 @@ async function profile() {
         ],
         cp.profileStatus,
         "required",
-      )}<div class="field"><label>Keep your availability current</label><small>We send a reminder after 23 days and set your profile inactive after 30 days without confirmation.</small></div></div></section><section class="panel"><h2><span class="section-number">04</span>Documents, ready when you are</h2><p class="small">Up to 5 MB per file. Your passport stays private. CVs and approved documents become available after a hiring party selects Contact Crew for an open job.</p><div class="form-grid">${docs.map(([key, label, accept]) => `<div class="document-row"><label for="${key}">${label}${key === "driversLicense" ? "" : " *"}</label><span class="small">${cp.documents[key] ? esc(cp.documents[key].originalName) : "No file uploaded"}</span>${cp.documents[key] ? `<button type="button" class="quiet small" data-document="/profile/documents/${key}">Download current file ↓</button>` : ""}<input id="${key}" name="${key}" type="file" accept="${accept}" ${!cp.documents[key] && key !== "driversLicense" ? "required" : ""}></div>`).join("")}<div class="document-row"><label for="additionalCertificates">Additional certificates (optional)</label><span class="small">Add named certificates. Existing certificates are preserved.</span>${field("certificateName", "Certificate name")}<input id="additionalCertificates" name="additionalCertificates" type="file" accept="application/pdf,image/jpeg,image/png,image/webp">${cp.documents.additionalCertificates.map((c, i) => `<div class="small">${esc(c.name)} <button type="button" class="quiet small" data-document="/profile/documents/additional/${i}">Download ↓</button></div>`).join("")}</div></div></section><section class="panel"><h2><span class="section-number">05</span>How you’d like to be contacted</h2>${checks(
+      )}<div class="field"><label>Keep your availability current</label><small>After 30 days without a login or profile update, we send a reminder. You then have 7 days to respond before your profile becomes inactive.</small></div></div></section><section class="panel"><h2><span class="section-number">04</span>Documents, ready when you are</h2><p class="small">Up to 5 MB per file. Your passport stays private. CVs and approved documents become available after a hiring party selects Contact Crew for an open job.</p><div class="form-grid">${docs.map(([key, label, accept]) => `<div class="document-row"><label for="${key}">${label}${key === "driversLicense" ? "" : " *"}</label><span class="small">${cp.documents[key] ? esc(cp.documents[key].originalName) : "No file uploaded"}</span>${cp.documents[key] ? `<button type="button" class="quiet small" data-document="/profile/documents/${key}">Download current file ↓</button>` : ""}<input id="${key}" name="${key}" type="file" accept="${accept}" ${!cp.documents[key] && key !== "driversLicense" ? "required" : ""}></div>`).join("")}<div class="document-row"><label for="additionalCertificates">Additional certificates (optional)</label><span class="small">Add named certificates. Existing certificates are preserved.</span>${field("certificateName", "Certificate name")}<input id="additionalCertificates" name="additionalCertificates" type="file" accept="application/pdf,image/jpeg,image/png,image/webp">${cp.documents.additionalCertificates.map((c, i) => `<div class="small">${esc(c.name)} <button type="button" class="quiet small" data-document="/profile/documents/additional/${i}">Download ↓</button></div>`).join("")}</div></div></section><section class="panel"><h2><span class="section-number">05</span>How you’d like to be contacted</h2>${checks(
         "contactPreferences",
         "Approved contact methods *",
         [
@@ -714,6 +702,7 @@ async function profile() {
   toggle();
   bindDocuments();
   locationHints("locationCountry", "locationCity", "locationPort");
+  enhanceCrewProfile(cp);
   bindForm("#profile-form", async (f) => {
     const fd = new FormData(f);
     const pos = [
@@ -936,9 +925,7 @@ async function legal() {
     $("#legal-copy").innerHTML =
       "<p>Profiles hold personal details, availability and uploaded documents. Hiring parties see limited profile summaries until they select Contact Crew for an open job. Contact and document access is tied to that job. Passport documents are private to the crew account.</p><p>The source documentation reserves the final privacy policy for NCA. Contact the team through your account for questions about retention, access or deletion.</p>";
   else {
-    const r = await fetch(`/terms-${employer ? "employer" : "crew"}.txt`);
-    $("#legal-copy").textContent = await r.text();
-    $("#legal-copy").className = "preline";
+    await formattedTerms(employer);
   }
 }
 async function init() {
@@ -992,12 +979,28 @@ async function init() {
         "crew-profile.html",
         "change-password.html",
         "report-issue.html",
+        "notifications.html",
+        "admin-approvals.html",
       ].includes(page)
     ) {
       location.href = "/crew-profile.html";
       return;
     }
+    if (
+      me.userType === "employer" &&
+      me.employerApproval !== "approved" &&
+      ![
+        "change-password.html",
+        "report-issue.html",
+        "notifications.html",
+        "admin-approvals.html",
+      ].includes(page)
+    ) {
+      return pendingEmployer();
+    }
     const handlers = {
+      "notifications.html": notificationsPage,
+      "admin-approvals.html": adminApprovals,
       "employer.html": dashboard,
       "jobseeker.html": dashboard,
       "jobseeker-jobs.html": browse,

@@ -1,3 +1,4 @@
+import { approvalMode } from "../services/employerApproval.js";
 import { profileReady } from "../services/profileReadiness.js";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
@@ -80,12 +81,10 @@ export const register = async (req, res) => {
       !["jobseeker", "employer"].includes(userType) ||
       !phone?.trim()
     )
-      return res
-        .status(400)
-        .json({
-          message:
-            "Valid email, phone, role and a password of at least 8 characters are required",
-        });
+      return res.status(400).json({
+        message:
+          "Valid email, phone, role and a password of at least 8 characters are required",
+      });
     if (req.body.termsAccepted !== "true" && req.body.termsAccepted !== true)
       return res
         .status(400)
@@ -100,18 +99,14 @@ export const register = async (req, res) => {
       userType === "employer" &&
       (!vessel.name || !(vessel.callSign || /^\d{9}$/.test(vessel.mmsi || "")))
     )
-      return res
-        .status(400)
-        .json({
-          message: "Vessel name and call sign or nine-digit MMSI are required",
-        });
+      return res.status(400).json({
+        message: "Vessel name and call sign or nine-digit MMSI are required",
+      });
     if (!isEmailConfigured && process.env.NODE_ENV !== "test")
-      return res
-        .status(503)
-        .json({
-          message:
-            "Email verification is temporarily unavailable. Please try again later.",
-        });
+      return res.status(503).json({
+        message:
+          "Email verification is temporarily unavailable. Please try again later.",
+      });
     const resolvedName =
       name && name.trim()
         ? name.trim()
@@ -144,6 +139,15 @@ export const register = async (req, res) => {
       phone,
       profile,
       vessel: userType === "employer" ? vessel : undefined,
+      employerApproval:
+        userType === "employer"
+          ? {
+              status:
+                (await approvalMode()) === "auto" ? "approved" : "pending",
+              source: "automatic",
+              reviewedAt: new Date(),
+            }
+          : undefined,
       termsAcceptedAt: new Date(),
       termsVersion: "2026-09-draft",
       emailVerificationExpiry: new Date(Date.now() + 10 * 60 * 1000),
@@ -297,6 +301,10 @@ export const login = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
+    user.lastLoginAt = new Date();
+    if (user.userType === "jobseeker")
+      user.crewProfile.profileReminderSentAt = undefined;
+    await user.save();
     const token = generateToken(user._id, user.tokenVersion);
     res.json({
       _id: user._id,

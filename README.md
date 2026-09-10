@@ -13,10 +13,11 @@ npm run preview
 
 Open http://127.0.0.1:8080. Preview creates a **disposable database**, not your configured database. Its data is lost when the preview process exits. On the first run, mongodb-memory-server downloads a MongoDB executable (the Windows archive is approximately 781 MB); keep the development dependencies installed.
 
-| Account | Email | Password |
-| --- | --- | --- |
+| Account  | Email                 | Password        |
+| -------- | --------------------- | --------------- |
 | Employer | employer@example.test | PreviewOnly123! |
-| Crew | crew@example.test | PreviewOnly123! |
+| Crew     | crew@example.test     | PreviewOnly123! |
+| Staff    | admin@example.test    | PreviewOnly123! |
 
 All jobs, people and documents in this preview are sample data. Email delivery is suppressed. These accounts are never created by `npm start`.
 
@@ -34,7 +35,15 @@ npm start
 
 Registration requires functioning SMTP for email verification. Startup fails clearly if the database or JWT configuration is missing. Use HTTPS and set `NODE_ENV=production` plus `ALLOWED_ORIGIN` for deployment. Do not use preview credentials or its test environment in production.
 
-The app serves the `public/` directory. The old `client/build` is not the active frontend. The shared UI is in `public/portal.js` and `public/portal.css`.
+The app serves the `public/` directory. The old `client/build` is not the active frontend. The shared UI is in `public/portal.js`, `public/portal-enhancements.js` and `public/portal.css`.
+
+## Employer approval and notifications
+
+Automatic approval is enabled by default; email verification is still required. Set `ADMIN_EMAILS` to trusted staff email addresses. Those accounts see **Employer approvals**, where staff can review vessel name, call sign/MMSI and choose automatic or manual approval. Manual mode blocks pending/rejected employers from hiring tools. Recorded approvals are preserved; legacy accounts without a recorded decision require review in manual mode. Changing vessel identity in manual mode requires another review.
+
+Set `APP_URL` to the public HTTPS address for email links. Crew receive preselection notices in Notifications and by email. After 30 days without a login/profile update, the supplied reminder email gives seven further days before automatic inactivity. Failed notification emails remain queued for hourly retry. SMTP credentials are required for actual delivery.
+
+Terms are separately formatted for crew and employers from `content/terms-source.txt`; rebuild with `python scripts/build-terms.py`. Bracketed legal placeholders still need final details.
 
 ## Checks
 

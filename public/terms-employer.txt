@@ -1,43 +1,646 @@
-Hiring Party NCA Daywork App Captain and Hiring Party Terms of Use Effective date: [DATE] Operated by: [FULL LEGAL NAME OF NCA ENTITY] Registered address: [ADDRESS] These Captain and Hiring Party Terms of Use govern access to and use of the NCA Daywork App by captains, heads of department, yacht owners, owner representatives, yacht managers, management companies, and other persons seeking crew for temporary daywork. By creating an account, purchasing access, posting a job, viewing matched crew, or selecting crew to contact, you confirm that you have read and accepted these Terms and the NCA Privacy Policy. 1. Definitions In these Terms: “App” means the NCA Daywork App and related services. “Crew Member” means a person who has created a crew profile and made themselves available for temporary daywork through the App. “Hiring Party” means the person or organization creating an account, posting a job, reviewing matched crew, or selecting crew to contact. “Registered Vessel” means the named vessel associated with the Hiring Party’s subscription. “Job” means a genuine temporary daywork requirement posted through the App. “Matched Crew” means crew profiles identified by the App as potentially relevant to a posted Job. “Select to Contact” means the App function through which a Hiring Party selects a Crew Member for further consideration and receives access to that Crew Member’s CV and approved contact details. “NCA” means [FULL LEGAL NAME]. 
-
-2. Eligibility and Authority To create or use a Hiring Party account, you must: ● Be at least 18 years old; ● Have legal capacity to accept these Terms; ● Be authorized to recruit or engage crew for the Registered Vessel; ● Provide accurate account, vessel, business, and payment information; ● Use the App only for legitimate hiring purposes; and ● Comply with all laws and regulations applicable to the Job and working relationship. If you create an account on behalf of a vessel, company, owner, or management organization, you confirm that you have authority to bind that party to these Terms. NCA may request information reasonably necessary to verify: ● Your identity; ● Your role; ● Your authority to hire; ● The existence or identity of the vessel; ● The employing or paying entity; ● Your billing information; or ● The legitimacy of a Job. NCA may refuse or delay account access until satisfactory verification is completed. 3. Purpose of the App The App helps Hiring Parties: ● Post temporary daywork requirements; ● Receive profiles of potentially relevant and available crew; ● Review limited matching information; ● Select suitable Crew Members for further consideration; ● Access the CV and approved contact details of selected Crew Members; and ● Contact selected Crew Members directly outside the App. NCA provides a matching and introduction service. Unless expressly agreed otherwise in writing, NCA does not: ● Employ the Crew Member; ● Engage the Crew Member on your behalf; ● Operate payroll; ● Set rates or working hours; 
-
-● Supervise the work; ● Direct the Crew Member’s duties; ● Guarantee the Crew Member’s performance; ● Guarantee that a Crew Member will accept the Job; ● Collect or distribute crew wages; ● Provide employment, tax, immigration, insurance, or legal advice; or ● Become a party to the working arrangement. 4. Daywork Only The App is intended for genuine temporary daywork requirements. Jobs may include temporary support such as: ● Washdowns; ● Detailing; ● Yard-period assistance; ● Charter turnarounds; ● Laundry; ● Deep cleaning; ● Provisioning; ● Service support; ● Boat-show preparation; ● Temporary galley support; ● Engineering assistance; or ● Other short-term yacht work. You must not use the App to avoid NCA’s separate terms or fees for permanent, rotational, seasonal, or longer-term crew placement. If a Job changes into a permanent, rotational, seasonal, or other longer-term position, you must contact NCA before making that appointment through or as a result of the App. NCA may determine whether a posting falls outside the intended scope of the Daywork App. 5. Employer Account and Registered Vessel Unless NCA agrees otherwise in writing, each subscription covers one Registered Vessel. You must not use one vessel subscription to recruit for: ● Multiple unrelated vessels; ● An entire managed fleet; ● Other vessels owned by the same owner; 
-
-● Other clients of a management company; ● A recruitment company’s clients; or ● Any vessel not identified on the account. A limited number of authorized users may be permitted under one Registered Vessel account, such as the captain, chief officer, chief stewardess, purser, or another person involved in daywork hiring. Each authorized user must: ● Have their own login where supported; ● Be authorized by the Registered Vessel; ● Comply with these Terms; and ● Protect their login credentials. You are responsible for activity performed through your account and by your authorized users. You must not share login credentials with unauthorized persons. Management companies or parties requiring access for multiple vessels must obtain separate vessel access or a written multi-vessel agreement from NCA. 6. Subscription Access Hiring Party access is available for the subscription period selected at purchase, such as: ● 30 days; ● 90 days; ● Six months; or ● One year. The subscription begins on the date stated at checkout or on the date access is activated. A subscription provides access to the App’s hiring functions during the applicable period. It does not guarantee: ● A minimum number of matching Crew Members; ● That matching Crew Members will be available; ● That a Crew Member will respond; ● That a Crew Member will accept the Job; ● That a Job will be filled; or ● Any particular hiring outcome. NCA may apply reasonable-use controls to job posting, profile viewing, and Select to Contact activity. 
-
-7. Fees and Payment You must pay all subscription fees, taxes, and other charges disclosed at checkout. Subscription fees are paid by the Hiring Party and must not be: ● Charged to a Crew Member; ● Deducted from a Crew Member’s rate; ● Recovered from a Crew Member; ● Treated as a crew registration charge; ● Made a condition of offering work; or ● Passed to crew in any other form. Crew use of the App is free. Your obligation to pay crew for work performed is separate from your payment to NCA. Failure to hire a Crew Member does not automatically entitle you to a subscription refund. 8. Renewal and Cancellation Choose the provision that matches the final product before launch. Option A: Fixed-Term Access Without Automatic Renewal Your subscription expires at the end of the purchased access period. It will not renew automatically unless you purchase another period of access. Option B: Automatic Renewal Your subscription automatically renews for the period and price disclosed at checkout unless cancelled before the renewal date. NCA will clearly disclose: ● That the subscription renews automatically; ● The renewal period; ● The amount to be charged; ● How and when to cancel; and ● Any required renewal notice. You may cancel future renewal through [ACCOUNT SETTINGS/METHOD]. 
-
-Cancellation stops future renewal but does not normally produce a refund for the current access period unless required by law or expressly stated otherwise. 9. Refunds Except where required by applicable law or expressly stated at checkout, subscription fees are non-refundable once access has been activated. NCA may, at its discretion, provide: ● An account credit; ● An extension of access; ● A partial refund; or ● A full refund when a significant technical failure prevents meaningful use of the App. No refund is due merely because: ● You do not post a Job; ● You do not select crew to contact; ● A Job receives few matches; ● A Crew Member does not reply; ● A Crew Member declines the Job; ● You fill the Job elsewhere; ● The Job is cancelled; ● The vessel changes location; or ● Your operational needs change. Nothing in this section limits any non-waivable legal right. 10. Job Posting Requirements Every Job must represent a genuine and current requirement for temporary daywork. You must provide accurate information concerning the Job, including where applicable: ● Position or department; ● Number of Crew Members needed; ● Work location; ● Start and end dates; ● Expected working hours; ● Duties; ● Required experience; 
-
-● Required qualifications or certificates; ● Work-authorization requirements; ● Rate or rate range; ● Currency; ● Overtime arrangements; ● Payment method; ● Payment timing; ● Transportation arrangements; ● Meals or accommodation; ● Required clothing or equipment; ● Physical requirements; ● Known safety considerations; and ● Any other material condition. You must promptly update, close, or cancel a Job when: ● The requirement changes; ● The dates change; ● The position is filled; ● The Job is cancelled; ● The vessel moves; ● The rate changes; ● The duties materially change; or ● The Job is no longer available. You must not post: ● False or misleading Jobs; ● Jobs that do not exist; ● Speculative Jobs used only to collect crew information; ● Jobs on behalf of an unauthorized vessel; ● Unlawful work; ● Unpaid trial work presented as paid daywork; ● Jobs involving unsafe or undisclosed hazardous activities; ● Discriminatory job requirements; ● Jobs intended to sell products or services to crew; ● Permanent positions presented as daywork; or ● Jobs that require crew to pay a fee. NCA may edit, reject, suspend, or remove any Job that appears misleading, unlawful, inappropriate, unsafe, outside the scope of the App, or inconsistent with these Terms. 11. Matching 
-
-The App may use information contained in the Job and crew profiles to identify potentially suitable Crew Members. Matching may consider factors such as: ● Position; ● Department; ● Location; ● Availability; ● Travel distance; ● Experience; ● Skills; ● Yacht-size experience; ● Qualifications; ● Work eligibility; and ● Other job-related criteria. Matching is an automated or system-assisted introduction tool. It is not an employment decision, professional recommendation, guarantee, or endorsement by NCA. You remain responsible for deciding whether a Crew Member is suitable for the Job. You must not assume that a high match position means that NCA has independently verified every part of the Crew Member’s profile. 12. Matched Crew Profiles Before using Select to Contact, you may see a limited profile summary for each Matched Crew Member. The limited profile may include: ● First name and last initial; ● Profile photograph; ● Position; ● General location; ● Availability; ● Experience level; ● Relevant skills; ● Yacht-size experience; ● Qualification status; ● Work-eligibility status; ● Preferred rate, where provided; and ● Date availability was last confirmed. 
-
-Before a Crew Member is selected to contact, you will not ordinarily receive access to: ● Their full CV; ● Their phone number; ● Their email address; ● Their WhatsApp information; ● Their residential address; ● Reference contact information; ● Identity documents; or ● Other protected information. You must not attempt to identify, locate, or contact a Crew Member outside the intended App process before using Select to Contact. 13. Select to Contact You may use Select to Contact only when: ● You have posted a genuine active Job; ● The Crew Member is a reasonable potential candidate for that Job; ● You have a genuine intention to consider contacting that Crew Member; ● You are authorized to hire for the Registered Vessel; and ● You agree to use the Crew Member’s information only for that Job or a directly related legitimate hiring purpose. When you select a Crew Member to contact: ● Their full CV may become available; ● Their approved contact details may become available; ● The Crew Member may be notified; ● Your identity, vessel information, and Job details may be disclosed to the Crew Member; ● The App may record the selection; ● NCA may record whether the CV or contact details were viewed; and ● You may contact the Crew Member directly outside the App. Selecting a Crew Member to contact does not mean: ● The Crew Member has accepted the Job; ● The Crew Member is reserved for you; ● The Crew Member is required to respond; ● NCA guarantees the Crew Member’s suitability; ● NCA has completed all required hiring checks; or ● A binding working agreement exists. 
-
-14. Selection Limits and Fair Use NCA may limit the number of Crew Members who can be selected to contact for a particular Job. Any limit may take into account: ● The number of Crew Members required; ● The nature of the Job; ● The location; ● The duration; ● Previous selection activity; ● Account history; or ● Suspected misuse. You must not select excessive numbers of Crew Members merely to: ● Access CVs; ● Collect phone numbers or email addresses; ● Build an independent crew database; ● Advertise unrelated services; ● Identify crew for future speculative requirements; ● Circumvent the App’s privacy protections; or ● Share crew details with another person or vessel. NCA may refuse additional selections, request information about the Job, suspend access, or close an account where selection activity appears excessive or unrelated to genuine hiring. 15. Use of Crew CVs and Contact Details Crew CVs and contact details are provided only for genuine consideration in relation to the Job for which the Crew Member was selected. You must: ● Keep the information secure; ● Limit access to people genuinely involved in the hiring decision; ● Use it only for a lawful hiring purpose; ● Contact the Crew Member professionally; ● Respect the Crew Member’s communication preferences; ● Stop contacting the Crew Member if asked; ● Correct or delete inaccurate information where legally required; ● Delete information when it is no longer reasonably needed; and ● Comply with applicable privacy and data-protection law. 
-
-You must not: ● Sell crew information; ● Publish crew information; ● Share it with other vessels without permission; ● Upload it to another crew database; ● Add it to marketing lists; ● Use it for unrelated sales or advertising; ● Scrape or systematically download information; ● conduct unsolicited mass messaging; ● Retain it indefinitely without a legitimate reason; ● Use it to harass, intimidate, discriminate against, or exploit crew; or ● Attempt to obtain additional personal information through deception. To the extent required by applicable data-protection law, you are independently responsible for the personal information you receive after selecting a Crew Member to contact. 16. Direct Communication The App does not provide, control, or monitor communications made through: ● Telephone; ● Text message; ● WhatsApp; ● Email; ● Video call; or ● Another external platform. You are responsible for the content and conduct of your communications. Your first communication should clearly identify: ● Your name; ● Your role; ● The Registered Vessel or legitimate confidential vessel identifier; ● The Job being discussed; ● The proposed dates; ● The location; ● The rate or rate range; and ● How the Crew Member’s details were obtained. You must not: ● Send abusive, sexual, threatening, discriminatory, or misleading communications; ● Pressure a Crew Member to accept immediately without material Job details; 
-
-● Request inappropriate photographs or personal information; ● Contact crew about unrelated products or services; ● Continue contacting a Crew Member after they decline or ask you to stop; or ● Misrepresent your identity, authority, vessel, or Job. 17. Hiring Decisions and Due Diligence You are responsible for carrying out any checks necessary before engaging a Crew Member. These may include verification of: ● Identity; ● Experience; ● References; ● Certificates; ● Licences; ● Medical fitness; ● Immigration status; ● Work authorization; ● Background checks; ● Right to work; ● Insurance; ● Tax information; and ● Any vessel-specific requirements. NCA does not guarantee that: ● A CV is complete; ● Every statement is accurate; ● A certificate remains current; ● A person has legal authorization to work in every location; ● A reference will respond; ● A Crew Member is suitable for a particular task; or ● A Crew Member will perform to your expectations. Any checks you conduct must be lawful, relevant, proportionate, and handled appropriately. 18. No Unlawful Discrimination You must comply with applicable equality, employment, and anti-discrimination laws. You must not make hiring decisions or post requirements based unlawfully on protected characteristics. 
-
-Job requirements must be genuinely related to the safe and effective performance of the work. You must not use the App to harass, exclude, or discriminate against crew unlawfully on grounds such as: ● Race; ● Color; ● Nationality or national origin; ● Religion; ● Sex; ● Pregnancy; ● Sexual orientation; ● Gender identity; ● Age; ● Disability; ● Genetic information; ● Marital or family status; or ● Another characteristic protected by applicable law. Nothing prevents you from requiring lawful work authorization, necessary certificates, relevant experience, or legitimate safety-related qualifications. 19. Working Relationship and Classification You are responsible for determining the correct legal relationship between you, the employing entity, the vessel, and the Crew Member. You must not assume that calling someone a: ● Dayworker; ● Freelancer; ● Contractor; ● Self-employed worker; or ● Temporary worker determines their legal classification. Classification may depend on the applicable law and the actual circumstances, including: ● Who controls the work; ● Who determines how duties are performed; ● The duration and nature of the relationship; ● The financial arrangements; ● The level of supervision; ● The parties’ responsibilities; and 
-
-● Other relevant legal factors. You are responsible for obtaining professional advice where necessary and for complying with all obligations arising from the correct classification. NCA does not determine worker status and is not responsible for an incorrect classification made by you or another party. 20. Rates, Wages, Payroll, and Taxes You are responsible for agreeing and paying all compensation due to the Crew Member. Before work begins, you must clearly agree: ● The rate; ● Currency; ● Whether the rate is hourly or daily; ● Expected hours; ● Overtime arrangements; ● Breaks; ● Expenses; ● Transportation; ● Cancellation terms; ● Payment method; and ● Payment date. You must: ● Pay the agreed compensation promptly; ● Pay at least any legally required minimum; ● Comply with applicable overtime and wage laws; ● Maintain legally required records; ● Make legally required deductions; ● Pay employer taxes and contributions where applicable; ● Issue required payroll or tax documentation; and ● Comply with any applicable reporting obligations. You must not: ● Withhold agreed payment because you are dissatisfied without a legitimate contractual or legal basis; ● Deduct NCA subscription fees from crew pay; ● Require unpaid work unless lawful, clearly disclosed, and genuinely voluntary; ● Impose undisclosed deductions; ● Change the agreed rate after work has been performed; or 
-
-● Retaliate against a Crew Member for raising a payment concern. NCA does not guarantee payment to Crew Members and does not ordinarily collect or distribute wages. NCA may suspend or close accounts following credible reports of non-payment or repeated payment disputes. 21. Safety and Working Conditions You are responsible for providing lawful and reasonably safe working conditions. You must: ● Disclose known material hazards; ● Provide appropriate instructions and supervision; ● Provide safe tools and equipment; ● Provide legally required protective equipment; ● Ensure duties are appropriate to the Crew Member’s qualifications; ● Provide reasonable access to drinking water, rest breaks, and sanitary facilities; ● Follow applicable working-time and rest requirements; ● Maintain emergency procedures; ● Report legally reportable incidents; and ● Comply with applicable maritime, workplace safety, and vessel regulations. You must not require a Crew Member to: ● Perform work they are not qualified to perform; ● Use unsafe or defective equipment; ● Work under dangerous conditions without appropriate protection; ● Conceal an injury or incident; ● Work while impaired; ● Surrender their passport or identity documents unlawfully; or ● Remain in a threatening, abusive, or coercive environment. Crew Members may decline or stop work they reasonably believe is unsafe or materially different from the Job as described. 22. Professional Conduct You and anyone acting on behalf of the Registered Vessel must treat crew professionally. You must not engage in: ● Harassment; 
-
-● Bullying; ● Sexual misconduct; ● Threats; ● Violence; ● Coercion; ● Retaliation; ● Discrimination; ● Humiliating treatment; ● Unlawful surveillance; ● Exploitation; or ● Other abusive conduct. You are responsible for the conduct of persons supervising or interacting with the Crew Member in connection with the Job. 23. Changes and Cancellations You must notify selected Crew Members promptly if: ● The Job is filled; ● The Job is cancelled; ● The start time changes; ● The location changes; ● The dates change; ● The rate changes; ● The duties materially change; or ● The Crew Member is no longer required. You are responsible for any cancellation payment required by: ● Your agreement with the Crew Member; ● Applicable law; ● Industry practice incorporated into the agreement; or ● A separate vessel policy. You must not repeatedly post or cancel Jobs in a misleading or disruptive manner. 24. Confidential Vessel Information You may choose to limit vessel-identifying information displayed publicly or during initial matching where the App supports confidential posting. However, before a Crew Member accepts work, you must provide enough accurate information for them to: 
-
-● Verify the legitimacy of the Job; ● Understand who is engaging them; ● Locate the workplace; ● Assess the duties and conditions; and ● Make an informed decision. Confidentiality must not be used to conceal the identity of a fraudulent, unauthorized, or unsafe hiring party. 25. Crew Fees Prohibited You must not charge Crew Members for: ● Registration; ● Matching; ● Being selected to contact; ● Viewing the Job; ● Applying; ● Receiving your message; ● Accepting the Job; ● Administrative processing; ● Access to the vessel; ● Uniforms or equipment where such charges are unlawful; or ● Any NCA subscription or recruitment cost. You must not direct crew to a third party that requires payment as a condition of being considered for the Job, unless the charge is lawful, necessary, clearly disclosed, and not a disguised recruitment fee. NCA may immediately suspend an account that attempts to charge crew for access to work. 26. Prohibited Uses You must not: ● Create fake accounts; ● Impersonate another person or vessel; ● Post fake Jobs; ● Use the App for permanent recruitment without authorization; ● Collect crew data without a genuine Job; ● Scrape, copy, or export profiles systematically; ● Sell or distribute crew information; ● Use automated tools to access the App without permission; ● Reverse engineer the App; 
-
-● Attempt to bypass account, payment, selection, or privacy controls; ● Use one subscription for unauthorized vessels; ● Contact crew for unrelated commercial purposes; ● Facilitate unlawful work; ● Engage in human trafficking, forced labor, or coercive conduct; ● Retaliate against a person who reports a concern; ● Introduce malware or harmful code; or ● Interfere with the App’s security or operation. 27. Reports, Complaints, and Cooperation Crew Members may report concerns including: ● Non-payment; ● Misleading Job details; ● Unsafe conditions; ● Harassment; ● Discrimination; ● Inappropriate contact; ● Misuse of personal information; ● Fraud; ● Excessive contact; or ● Another breach of these Terms. NCA may contact you for information about a report. You agree to cooperate reasonably with NCA’s review and provide relevant information where appropriate. NCA may preserve account, Job, selection, and access records for legitimate security, legal, dispute-resolution, and enforcement purposes. NCA does not guarantee that it can resolve every dispute between a Crew Member and Hiring Party. Nothing in these Terms prevents a Crew Member or Hiring Party from contacting an appropriate regulator, law-enforcement agency, court, labor authority, maritime authority, or emergency service. 28. Account Suspension and Termination NCA may warn, restrict, suspend, or terminate your account if it reasonably believes that you have: 
-
-● Breached these Terms; ● Provided false information; ● Failed verification; ● Misused crew information; ● Failed to pay NCA; ● Failed to pay crew; ● Posted misleading or unlawful Jobs; ● Engaged in abusive or unsafe conduct; ● Used the App for unauthorized permanent recruitment; ● Shared account access improperly; ● Used one subscription for multiple unauthorized vessels; ● Created a legal, safety, privacy, or reputational risk; or ● Attempted to interfere with the App. Serious misconduct may result in immediate suspension without prior notice. Where appropriate and legally permitted, NCA may provide an opportunity to respond. Suspension or termination does not remove obligations already owed to Crew Members. 29. No Guarantee NCA does not guarantee: ● Continuous availability of the App; ● A particular number of crew profiles; ● That Matched Crew are still available; ● That a Crew Member will respond; ● That a Crew Member will accept; ● That a Job will be filled; ● The quality of work performed; ● The accuracy of every profile; ● The validity of every uploaded document; ● The outcome of any hiring decision; or ● That use of the App will satisfy every legal hiring requirement. You remain responsible for your hiring decision and the working relationship. 30. Limitation of NCA’s Responsibility To the fullest extent permitted by applicable law, NCA is not responsible for losses arising solely from: ● A Crew Member’s conduct; 
-
-● A Hiring Party’s conduct; ● An inaccurate Job or profile; ● External communications; ● A cancelled Job; ● A Crew Member’s failure to attend; ● The quality of work; ● Injury or damage occurring at the workplace; ● Unpaid or disputed wages; ● Worker classification; ● Payroll or tax failures; ● Immigration or work-authorization issues; ● Discriminatory or unlawful conduct by a user; ● Information saved outside the App; or ● Events outside NCA’s reasonable control. Nothing in these Terms excludes liability that cannot legally be excluded. 31. Indemnity To the extent permitted by applicable law, you agree to compensate and protect NCA, its officers, employees, and contractors against third-party claims, losses, liabilities, costs, or reasonable legal expenses arising from: ● Your breach of these Terms; ● Your Job posting; ● Your use or misuse of crew information; ● Your hiring decision; ● The working conditions you provide; ● Your failure to pay crew; ● Your employment or worker-classification decision; ● Your tax, payroll, immigration, insurance, or safety obligations; ● Your unlawful or discriminatory conduct; or ● The actions of persons using your account or acting for the Registered Vessel. This section must be reviewed and tailored under the governing law. 32. Privacy and Data Protection NCA processes account and usage information in accordance with the NCA Privacy Policy. You acknowledge that NCA may process and record information including: ● Account details; ● Vessel details; 
-
-● Job postings; ● Payment information; ● Matched profile activity; ● Crew selected to contact; ● CV access; ● Contact-detail access; ● Job status; ● Hiring outcomes; ● Complaints; ● Reports; and ● Security activity. You must comply with applicable privacy and data-protection obligations for any crew information you receive. Where applicable, you must provide your own legally required privacy information to Crew Members concerning any further use of their information outside the App. 33. Intellectual Property The App, its software, design, branding, matching systems, text, and other NCA materials belong to NCA or its licensors. NCA grants you a limited, revocable, non-transferable right to use the App during your valid access period for the purposes permitted by these Terms. You receive no ownership right in: ● The App; ● NCA’s matching system; ● Crew profile summaries; ● Crew CVs; ● NCA branding; or ● Other protected content. Crew Members retain rights in their CVs and profile content. 34. Changes to the App or These Terms NCA may update the App, subscription features, reasonable-use controls, or these Terms. Material changes will be communicated through the App, by email, or by another reasonable method. 
-
-Where required, NCA may ask you to accept updated Terms before continuing to use the App. 35. Governing Law and Disputes These Terms are governed by the laws of [INSERT JURISDICTION], subject to any mandatory legal protections that apply. The parties agree that disputes will be handled through [COURTS/MEDIATION/ARBITRATION PROCESS]. Any arbitration, class-action waiver, limitation period, or jurisdiction clause must be reviewed by qualified legal counsel before inclusion. 36. Contacting NCA Questions, account matters, complaints, or legal notices may be sent to: NCA legal entity: [LEGAL NAME] Email: [SUPPORT OR LEGAL EMAIL] Registered address: [ADDRESS] Privacy contact: [PRIVACY EMAIL] 
+NCA Daywork App
+Captain and Hiring Party Terms of Use
+Effective date: [DATE]
+Operated by: [FULL LEGAL NAME OF NCA ENTITY]
+Registered address: [ADDRESS]
+These Captain and Hiring Party Terms of Use govern access to and use of the NCA Daywork App by captains, heads of department, yacht owners, owner representatives, yacht managers, management companies, and other persons seeking crew for temporary daywork.
+By creating an account, purchasing access, posting a job, viewing matched crew, or selecting crew to contact, you confirm that you have read and accepted these Terms and the NCA Privacy Policy.
+1. Definitions
+In these Terms:
+“App” means the NCA Daywork App and related services.
+“Crew Member” means a person who has created a crew profile and made themselves available for temporary daywork through the App.
+“Hiring Party” means the person or organization creating an account, posting a job, reviewing matched crew, or selecting crew to contact.
+“Registered Vessel” means the named vessel associated with the Hiring Party’s subscription.
+“Job” means a genuine temporary daywork requirement posted through the App.
+“Matched Crew” means crew profiles identified by the App as potentially relevant to a posted Job.
+“Select to Contact” means the App function through which a Hiring Party selects a Crew Member for further consideration and receives access to that Crew Member’s CV and approved contact details.
+“NCA” means [FULL LEGAL NAME].
+2. Eligibility and Authority
+To create or use a Hiring Party account, you must:
+Be at least 18 years old;
+Have legal capacity to accept these Terms;
+Be authorized to recruit or engage crew for the Registered Vessel;
+Provide accurate account, vessel, business, and payment information;
+Use the App only for legitimate hiring purposes; and
+Comply with all laws and regulations applicable to the Job and working relationship.
+If you create an account on behalf of a vessel, company, owner, or management organization, you confirm that you have authority to bind that party to these Terms.
+NCA may request information reasonably necessary to verify:
+Your identity;
+Your role;
+Your authority to hire;
+The existence or identity of the vessel;
+The employing or paying entity;
+Your billing information; or
+The legitimacy of a Job.
+NCA may refuse or delay account access until satisfactory verification is completed.
+3. Purpose of the App
+The App helps Hiring Parties:
+Post temporary daywork requirements;
+Receive profiles of potentially relevant and available crew;
+Review limited matching information;
+Select suitable Crew Members for further consideration;
+Access the CV and approved contact details of selected Crew Members; and
+Contact selected Crew Members directly outside the App.
+NCA provides a matching and introduction service.
+Unless expressly agreed otherwise in writing, NCA does not:
+Employ the Crew Member;
+Engage the Crew Member on your behalf;
+Operate payroll;
+Set rates or working hours;
+Supervise the work;
+Direct the Crew Member’s duties;
+Guarantee the Crew Member’s performance;
+Guarantee that a Crew Member will accept the Job;
+Collect or distribute crew wages;
+Provide employment, tax, immigration, insurance, or legal advice; or
+Become a party to the working arrangement.
+4. Daywork Only
+The App is intended for genuine temporary daywork requirements.
+Jobs may include temporary support such as:
+Washdowns;
+Detailing;
+Yard-period assistance;
+Charter turnarounds;
+Laundry;
+Deep cleaning;
+Provisioning;
+Service support;
+Boat-show preparation;
+Temporary galley support;
+Engineering assistance; or
+Other short-term yacht work.
+You must not use the App to avoid NCA’s separate terms or fees for permanent, rotational, seasonal, or longer-term crew placement.
+If a Job changes into a permanent, rotational, seasonal, or other longer-term position, you must contact NCA before making that appointment through or as a result of the App.
+NCA may determine whether a posting falls outside the intended scope of the Daywork App.
+5. Employer Account and Registered Vessel
+Unless NCA agrees otherwise in writing, each subscription covers one Registered Vessel.
+You must not use one vessel subscription to recruit for:
+Multiple unrelated vessels;
+An entire managed fleet;
+Other vessels owned by the same owner;
+Other clients of a management company;
+A recruitment company’s clients; or
+Any vessel not identified on the account.
+A limited number of authorized users may be permitted under one Registered Vessel account, such as the captain, chief officer, chief stewardess, purser, or another person involved in daywork hiring.
+Each authorized user must:
+Have their own login where supported;
+Be authorized by the Registered Vessel;
+Comply with these Terms; and
+Protect their login credentials.
+You are responsible for activity performed through your account and by your authorized users.
+You must not share login credentials with unauthorized persons.
+Management companies or parties requiring access for multiple vessels must obtain separate vessel access or a written multi-vessel agreement from NCA.
+6. Subscription Access
+Hiring Party access is available for the subscription period selected at purchase, such as:
+30 days;
+90 days;
+Six months; or
+One year.
+The subscription begins on the date stated at checkout or on the date access is activated.
+A subscription provides access to the App’s hiring functions during the applicable period. It does not guarantee:
+A minimum number of matching Crew Members;
+That matching Crew Members will be available;
+That a Crew Member will respond;
+That a Crew Member will accept the Job;
+That a Job will be filled; or
+Any particular hiring outcome.
+NCA may apply reasonable-use controls to job posting, profile viewing, and Select to Contact activity.
+7. Fees and Payment
+You must pay all subscription fees, taxes, and other charges disclosed at checkout.
+Subscription fees are paid by the Hiring Party and must not be:
+Charged to a Crew Member;
+Deducted from a Crew Member’s rate;
+Recovered from a Crew Member;
+Treated as a crew registration charge;
+Made a condition of offering work; or
+Passed to crew in any other form.
+Crew use of the App is free.
+Your obligation to pay crew for work performed is separate from your payment to NCA.
+Failure to hire a Crew Member does not automatically entitle you to a subscription refund.
+8. Renewal and Cancellation
+Choose the provision that matches the final product before launch.
+Option A: Fixed-Term Access Without Automatic Renewal
+Your subscription expires at the end of the purchased access period.
+It will not renew automatically unless you purchase another period of access.
+Option B: Automatic Renewal
+Your subscription automatically renews for the period and price disclosed at checkout unless cancelled before the renewal date.
+NCA will clearly disclose:
+That the subscription renews automatically;
+The renewal period;
+The amount to be charged;
+How and when to cancel; and
+Any required renewal notice.
+You may cancel future renewal through [ACCOUNT SETTINGS/METHOD].
+Cancellation stops future renewal but does not normally produce a refund for the current access period unless required by law or expressly stated otherwise.
+9. Refunds
+Except where required by applicable law or expressly stated at checkout, subscription fees are non-refundable once access has been activated.
+NCA may, at its discretion, provide:
+An account credit;
+An extension of access;
+A partial refund; or
+A full refund
+when a significant technical failure prevents meaningful use of the App.
+No refund is due merely because:
+You do not post a Job;
+You do not select crew to contact;
+A Job receives few matches;
+A Crew Member does not reply;
+A Crew Member declines the Job;
+You fill the Job elsewhere;
+The Job is cancelled;
+The vessel changes location; or
+Your operational needs change.
+Nothing in this section limits any non-waivable legal right.
+10. Job Posting Requirements
+Every Job must represent a genuine and current requirement for temporary daywork.
+You must provide accurate information concerning the Job, including where applicable:
+Position or department;
+Number of Crew Members needed;
+Work location;
+Start and end dates;
+Expected working hours;
+Duties;
+Required experience;
+Required qualifications or certificates;
+Work-authorization requirements;
+Rate or rate range;
+Currency;
+Overtime arrangements;
+Payment method;
+Payment timing;
+Transportation arrangements;
+Meals or accommodation;
+Required clothing or equipment;
+Physical requirements;
+Known safety considerations; and
+Any other material condition.
+You must promptly update, close, or cancel a Job when:
+The requirement changes;
+The dates change;
+The position is filled;
+The Job is cancelled;
+The vessel moves;
+The rate changes;
+The duties materially change; or
+The Job is no longer available.
+You must not post:
+False or misleading Jobs;
+Jobs that do not exist;
+Speculative Jobs used only to collect crew information;
+Jobs on behalf of an unauthorized vessel;
+Unlawful work;
+Unpaid trial work presented as paid daywork;
+Jobs involving unsafe or undisclosed hazardous activities;
+Discriminatory job requirements;
+Jobs intended to sell products or services to crew;
+Permanent positions presented as daywork; or
+Jobs that require crew to pay a fee.
+NCA may edit, reject, suspend, or remove any Job that appears misleading, unlawful, inappropriate, unsafe, outside the scope of the App, or inconsistent with these Terms.
+11. Matching
+The App may use information contained in the Job and crew profiles to identify potentially suitable Crew Members.
+Matching may consider factors such as:
+Position;
+Department;
+Location;
+Availability;
+Travel distance;
+Experience;
+Skills;
+Yacht-size experience;
+Qualifications;
+Work eligibility; and
+Other job-related criteria.
+Matching is an automated or system-assisted introduction tool. It is not an employment decision, professional recommendation, guarantee, or endorsement by NCA.
+You remain responsible for deciding whether a Crew Member is suitable for the Job.
+You must not assume that a high match position means that NCA has independently verified every part of the Crew Member’s profile.
+12. Matched Crew Profiles
+Before using Select to Contact, you may see a limited profile summary for each Matched Crew Member.
+The limited profile may include:
+First name and last initial;
+Profile photograph;
+Position;
+General location;
+Availability;
+Experience level;
+Relevant skills;
+Yacht-size experience;
+Qualification status;
+Work-eligibility status;
+Preferred rate, where provided; and
+Date availability was last confirmed.
+Before a Crew Member is selected to contact, you will not ordinarily receive access to:
+Their full CV;
+Their phone number;
+Their email address;
+Their WhatsApp information;
+Their residential address;
+Reference contact information;
+Identity documents; or
+Other protected information.
+You must not attempt to identify, locate, or contact a Crew Member outside the intended App process before using Select to Contact.
+13. Select to Contact
+You may use Select to Contact only when:
+You have posted a genuine active Job;
+The Crew Member is a reasonable potential candidate for that Job;
+You have a genuine intention to consider contacting that Crew Member;
+You are authorized to hire for the Registered Vessel; and
+You agree to use the Crew Member’s information only for that Job or a directly related legitimate hiring purpose.
+When you select a Crew Member to contact:
+Their full CV may become available;
+Their approved contact details may become available;
+The Crew Member may be notified;
+Your identity, vessel information, and Job details may be disclosed to the Crew Member;
+The App may record the selection;
+NCA may record whether the CV or contact details were viewed; and
+You may contact the Crew Member directly outside the App.
+Selecting a Crew Member to contact does not mean:
+The Crew Member has accepted the Job;
+The Crew Member is reserved for you;
+The Crew Member is required to respond;
+NCA guarantees the Crew Member’s suitability;
+NCA has completed all required hiring checks; or
+A binding working agreement exists.
+14. Selection Limits and Fair Use
+NCA may limit the number of Crew Members who can be selected to contact for a particular Job.
+Any limit may take into account:
+The number of Crew Members required;
+The nature of the Job;
+The location;
+The duration;
+Previous selection activity;
+Account history; or
+Suspected misuse.
+You must not select excessive numbers of Crew Members merely to:
+Access CVs;
+Collect phone numbers or email addresses;
+Build an independent crew database;
+Advertise unrelated services;
+Identify crew for future speculative requirements;
+Circumvent the App’s privacy protections; or
+Share crew details with another person or vessel.
+NCA may refuse additional selections, request information about the Job, suspend access, or close an account where selection activity appears excessive or unrelated to genuine hiring.
+15. Use of Crew CVs and Contact Details
+Crew CVs and contact details are provided only for genuine consideration in relation to the Job for which the Crew Member was selected.
+You must:
+Keep the information secure;
+Limit access to people genuinely involved in the hiring decision;
+Use it only for a lawful hiring purpose;
+Contact the Crew Member professionally;
+Respect the Crew Member’s communication preferences;
+Stop contacting the Crew Member if asked;
+Correct or delete inaccurate information where legally required;
+Delete information when it is no longer reasonably needed; and
+Comply with applicable privacy and data-protection law.
+You must not:
+Sell crew information;
+Publish crew information;
+Share it with other vessels without permission;
+Upload it to another crew database;
+Add it to marketing lists;
+Use it for unrelated sales or advertising;
+Scrape or systematically download information;
+conduct unsolicited mass messaging;
+Retain it indefinitely without a legitimate reason;
+Use it to harass, intimidate, discriminate against, or exploit crew; or
+Attempt to obtain additional personal information through deception.
+To the extent required by applicable data-protection law, you are independently responsible for the personal information you receive after selecting a Crew Member to contact.
+16. Direct Communication
+The App does not provide, control, or monitor communications made through:
+Telephone;
+Text message;
+WhatsApp;
+Email;
+Video call; or
+Another external platform.
+You are responsible for the content and conduct of your communications.
+Your first communication should clearly identify:
+Your name;
+Your role;
+The Registered Vessel or legitimate confidential vessel identifier;
+The Job being discussed;
+The proposed dates;
+The location;
+The rate or rate range; and
+How the Crew Member’s details were obtained.
+You must not:
+Send abusive, sexual, threatening, discriminatory, or misleading communications;
+Pressure a Crew Member to accept immediately without material Job details;
+Request inappropriate photographs or personal information;
+Contact crew about unrelated products or services;
+Continue contacting a Crew Member after they decline or ask you to stop; or
+Misrepresent your identity, authority, vessel, or Job.
+17. Hiring Decisions and Due Diligence
+You are responsible for carrying out any checks necessary before engaging a Crew Member.
+These may include verification of:
+Identity;
+Experience;
+References;
+Certificates;
+Licences;
+Medical fitness;
+Immigration status;
+Work authorization;
+Background checks;
+Right to work;
+Insurance;
+Tax information; and
+Any vessel-specific requirements.
+NCA does not guarantee that:
+A CV is complete;
+Every statement is accurate;
+A certificate remains current;
+A person has legal authorization to work in every location;
+A reference will respond;
+A Crew Member is suitable for a particular task; or
+A Crew Member will perform to your expectations.
+Any checks you conduct must be lawful, relevant, proportionate, and handled appropriately.
+18. No Unlawful Discrimination
+You must comply with applicable equality, employment, and anti-discrimination laws.
+You must not make hiring decisions or post requirements based unlawfully on protected characteristics.
+Job requirements must be genuinely related to the safe and effective performance of the work.
+You must not use the App to harass, exclude, or discriminate against crew unlawfully on grounds such as:
+Race;
+Color;
+Nationality or national origin;
+Religion;
+Sex;
+Pregnancy;
+Sexual orientation;
+Gender identity;
+Age;
+Disability;
+Genetic information;
+Marital or family status; or
+Another characteristic protected by applicable law.
+Nothing prevents you from requiring lawful work authorization, necessary certificates, relevant experience, or legitimate safety-related qualifications.
+19. Working Relationship and Classification
+You are responsible for determining the correct legal relationship between you, the employing entity, the vessel, and the Crew Member.
+You must not assume that calling someone a:
+Dayworker;
+Freelancer;
+Contractor;
+Self-employed worker; or
+Temporary worker
+determines their legal classification.
+Classification may depend on the applicable law and the actual circumstances, including:
+Who controls the work;
+Who determines how duties are performed;
+The duration and nature of the relationship;
+The financial arrangements;
+The level of supervision;
+The parties’ responsibilities; and
+Other relevant legal factors.
+You are responsible for obtaining professional advice where necessary and for complying with all obligations arising from the correct classification.
+NCA does not determine worker status and is not responsible for an incorrect classification made by you or another party.
+20. Rates, Wages, Payroll, and Taxes
+You are responsible for agreeing and paying all compensation due to the Crew Member.
+Before work begins, you must clearly agree:
+The rate;
+Currency;
+Whether the rate is hourly or daily;
+Expected hours;
+Overtime arrangements;
+Breaks;
+Expenses;
+Transportation;
+Cancellation terms;
+Payment method; and
+Payment date.
+You must:
+Pay the agreed compensation promptly;
+Pay at least any legally required minimum;
+Comply with applicable overtime and wage laws;
+Maintain legally required records;
+Make legally required deductions;
+Pay employer taxes and contributions where applicable;
+Issue required payroll or tax documentation; and
+Comply with any applicable reporting obligations.
+You must not:
+Withhold agreed payment because you are dissatisfied without a legitimate contractual or legal basis;
+Deduct NCA subscription fees from crew pay;
+Require unpaid work unless lawful, clearly disclosed, and genuinely voluntary;
+Impose undisclosed deductions;
+Change the agreed rate after work has been performed; or
+Retaliate against a Crew Member for raising a payment concern.
+NCA does not guarantee payment to Crew Members and does not ordinarily collect or distribute wages.
+NCA may suspend or close accounts following credible reports of non-payment or repeated payment disputes.
+21. Safety and Working Conditions
+You are responsible for providing lawful and reasonably safe working conditions.
+You must:
+Disclose known material hazards;
+Provide appropriate instructions and supervision;
+Provide safe tools and equipment;
+Provide legally required protective equipment;
+Ensure duties are appropriate to the Crew Member’s qualifications;
+Provide reasonable access to drinking water, rest breaks, and sanitary facilities;
+Follow applicable working-time and rest requirements;
+Maintain emergency procedures;
+Report legally reportable incidents; and
+Comply with applicable maritime, workplace safety, and vessel regulations.
+You must not require a Crew Member to:
+Perform work they are not qualified to perform;
+Use unsafe or defective equipment;
+Work under dangerous conditions without appropriate protection;
+Conceal an injury or incident;
+Work while impaired;
+Surrender their passport or identity documents unlawfully; or
+Remain in a threatening, abusive, or coercive environment.
+Crew Members may decline or stop work they reasonably believe is unsafe or materially different from the Job as described.
+22. Professional Conduct
+You and anyone acting on behalf of the Registered Vessel must treat crew professionally.
+You must not engage in:
+Harassment;
+Bullying;
+Sexual misconduct;
+Threats;
+Violence;
+Coercion;
+Retaliation;
+Discrimination;
+Humiliating treatment;
+Unlawful surveillance;
+Exploitation; or
+Other abusive conduct.
+You are responsible for the conduct of persons supervising or interacting with the Crew Member in connection with the Job.
+23. Changes and Cancellations
+You must notify selected Crew Members promptly if:
+The Job is filled;
+The Job is cancelled;
+The start time changes;
+The location changes;
+The dates change;
+The rate changes;
+The duties materially change; or
+The Crew Member is no longer required.
+You are responsible for any cancellation payment required by:
+Your agreement with the Crew Member;
+Applicable law;
+Industry practice incorporated into the agreement; or
+A separate vessel policy.
+You must not repeatedly post or cancel Jobs in a misleading or disruptive manner.
+24. Confidential Vessel Information
+You may choose to limit vessel-identifying information displayed publicly or during initial matching where the App supports confidential posting.
+However, before a Crew Member accepts work, you must provide enough accurate information for them to:
+Verify the legitimacy of the Job;
+Understand who is engaging them;
+Locate the workplace;
+Assess the duties and conditions; and
+Make an informed decision.
+Confidentiality must not be used to conceal the identity of a fraudulent, unauthorized, or unsafe hiring party.
+25. Crew Fees Prohibited
+You must not charge Crew Members for:
+Registration;
+Matching;
+Being selected to contact;
+Viewing the Job;
+Applying;
+Receiving your message;
+Accepting the Job;
+Administrative processing;
+Access to the vessel;
+Uniforms or equipment where such charges are unlawful; or
+Any NCA subscription or recruitment cost.
+You must not direct crew to a third party that requires payment as a condition of being considered for the Job, unless the charge is lawful, necessary, clearly disclosed, and not a disguised recruitment fee.
+NCA may immediately suspend an account that attempts to charge crew for access to work.
+26. Prohibited Uses
+You must not:
+Create fake accounts;
+Impersonate another person or vessel;
+Post fake Jobs;
+Use the App for permanent recruitment without authorization;
+Collect crew data without a genuine Job;
+Scrape, copy, or export profiles systematically;
+Sell or distribute crew information;
+Use automated tools to access the App without permission;
+Reverse engineer the App;
+Attempt to bypass account, payment, selection, or privacy controls;
+Use one subscription for unauthorized vessels;
+Contact crew for unrelated commercial purposes;
+Facilitate unlawful work;
+Engage in human trafficking, forced labor, or coercive conduct;
+Retaliate against a person who reports a concern;
+Introduce malware or harmful code; or
+Interfere with the App’s security or operation.
+27. Reports, Complaints, and Cooperation
+Crew Members may report concerns including:
+Non-payment;
+Misleading Job details;
+Unsafe conditions;
+Harassment;
+Discrimination;
+Inappropriate contact;
+Misuse of personal information;
+Fraud;
+Excessive contact; or
+Another breach of these Terms.
+NCA may contact you for information about a report.
+You agree to cooperate reasonably with NCA’s review and provide relevant information where appropriate.
+NCA may preserve account, Job, selection, and access records for legitimate security, legal, dispute-resolution, and enforcement purposes.
+NCA does not guarantee that it can resolve every dispute between a Crew Member and Hiring Party.
+Nothing in these Terms prevents a Crew Member or Hiring Party from contacting an appropriate regulator, law-enforcement agency, court, labor authority, maritime authority, or emergency service.
+28. Account Suspension and Termination
+NCA may warn, restrict, suspend, or terminate your account if it reasonably believes that you have:
+Breached these Terms;
+Provided false information;
+Failed verification;
+Misused crew information;
+Failed to pay NCA;
+Failed to pay crew;
+Posted misleading or unlawful Jobs;
+Engaged in abusive or unsafe conduct;
+Used the App for unauthorized permanent recruitment;
+Shared account access improperly;
+Used one subscription for multiple unauthorized vessels;
+Created a legal, safety, privacy, or reputational risk; or
+Attempted to interfere with the App.
+Serious misconduct may result in immediate suspension without prior notice.
+Where appropriate and legally permitted, NCA may provide an opportunity to respond.
+Suspension or termination does not remove obligations already owed to Crew Members.
+29. No Guarantee
+NCA does not guarantee:
+Continuous availability of the App;
+A particular number of crew profiles;
+That Matched Crew are still available;
+That a Crew Member will respond;
+That a Crew Member will accept;
+That a Job will be filled;
+The quality of work performed;
+The accuracy of every profile;
+The validity of every uploaded document;
+The outcome of any hiring decision; or
+That use of the App will satisfy every legal hiring requirement.
+You remain responsible for your hiring decision and the working relationship.
+30. Limitation of NCA’s Responsibility
+To the fullest extent permitted by applicable law, NCA is not responsible for losses arising solely from:
+A Crew Member’s conduct;
+A Hiring Party’s conduct;
+An inaccurate Job or profile;
+External communications;
+A cancelled Job;
+A Crew Member’s failure to attend;
+The quality of work;
+Injury or damage occurring at the workplace;
+Unpaid or disputed wages;
+Worker classification;
+Payroll or tax failures;
+Immigration or work-authorization issues;
+Discriminatory or unlawful conduct by a user;
+Information saved outside the App; or
+Events outside NCA’s reasonable control.
+Nothing in these Terms excludes liability that cannot legally be excluded.
+31. Indemnity
+To the extent permitted by applicable law, you agree to compensate and protect NCA, its officers, employees, and contractors against third-party claims, losses, liabilities, costs, or reasonable legal expenses arising from:
+Your breach of these Terms;
+Your Job posting;
+Your use or misuse of crew information;
+Your hiring decision;
+The working conditions you provide;
+Your failure to pay crew;
+Your employment or worker-classification decision;
+Your tax, payroll, immigration, insurance, or safety obligations;
+Your unlawful or discriminatory conduct; or
+The actions of persons using your account or acting for the Registered Vessel.
+This section must be reviewed and tailored under the governing law.
+32. Privacy and Data Protection
+NCA processes account and usage information in accordance with the NCA Privacy Policy.
+You acknowledge that NCA may process and record information including:
+Account details;
+Vessel details;
+Job postings;
+Payment information;
+Matched profile activity;
+Crew selected to contact;
+CV access;
+Contact-detail access;
+Job status;
+Hiring outcomes;
+Complaints;
+Reports; and
+Security activity.
+You must comply with applicable privacy and data-protection obligations for any crew information you receive.
+Where applicable, you must provide your own legally required privacy information to Crew Members concerning any further use of their information outside the App.
+33. Intellectual Property
+The App, its software, design, branding, matching systems, text, and other NCA materials belong to NCA or its licensors.
+NCA grants you a limited, revocable, non-transferable right to use the App during your valid access period for the purposes permitted by these Terms.
+You receive no ownership right in:
+The App;
+NCA’s matching system;
+Crew profile summaries;
+Crew CVs;
+NCA branding; or
+Other protected content.
+Crew Members retain rights in their CVs and profile content.
+34. Changes to the App or These Terms
+NCA may update the App, subscription features, reasonable-use controls, or these Terms.
+Material changes will be communicated through the App, by email, or by another reasonable method.
+Where required, NCA may ask you to accept updated Terms before continuing to use the App.
+35. Governing Law and Disputes
+These Terms are governed by the laws of [INSERT JURISDICTION], subject to any mandatory legal protections that apply.
+The parties agree that disputes will be handled through [COURTS/MEDIATION/ARBITRATION PROCESS].
+Any arbitration, class-action waiver, limitation period, or jurisdiction clause must be reviewed by qualified legal counsel before inclusion.
+36. Contacting NCA
+Questions, account matters, complaints, or legal notices may be sent to:
+NCA legal entity: [LEGAL NAME]
+Email: [SUPPORT OR LEGAL EMAIL]
+Registered address: [ADDRESS]
+Privacy contact: [PRIVACY EMAIL]

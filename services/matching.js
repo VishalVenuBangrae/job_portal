@@ -123,12 +123,21 @@ export function distanceKm(a, b) {
 }
 export function matchCrew(user, job, now = new Date()) {
   const cp = user.crewProfile;
+  const lastActivity = Math.max(
+    +new Date(cp?.profileLastActive || 0),
+    +new Date(user.lastLoginAt || 0),
+  );
+  const reminder = +new Date(cp?.profileReminderSentAt || 0);
+  const expires =
+    reminder > lastActivity
+      ? reminder + 7 * 86400000
+      : lastActivity + 37 * 86400000;
   if (
     !user.emailVerified ||
     !cp?.profileComplete ||
     cp.profileStatus !== "active" ||
     !cp.profileLastActive ||
-    +new Date(cp.profileLastActive) <= +now - 30 * 86400000
+    +now >= expires
   )
     return null;
   if (
@@ -176,7 +185,10 @@ export function matchCrew(user, job, now = new Date()) {
     "Available for all job dates",
   ];
   if (skills.length) reasons.push(`${skills.length} matching skills`);
-  const age = Math.max(0, (+now - new Date(cp.profileLastActive)) / 86400000);
+  const age = Math.min(
+    30,
+    Math.max(0, (+now - new Date(cp.profileLastActive)) / 86400000),
+  );
   const score =
     (positionKey(cp.primaryPosition) === positionKey(job.position) ? 40 : 25) +
     (sameCity ? 20 : 10) +

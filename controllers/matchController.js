@@ -1,3 +1,8 @@
+import {
+  notifyWithEmail,
+  preselectionMessage,
+} from "../services/notificationService.js";
+import { escapeHtml } from "../services/http.js";
 import Job from "../models/Job.js";
 import User from "../models/User.js";
 import Notification from "../models/Notification.js";
@@ -74,17 +79,20 @@ export const unlockCrew = endpoint(async (req, res) => {
   );
   if (!updated)
     fail(409, "Contact limit reached or job changed. Refresh and try again.");
-  await Notification.create({
+  const message = preselectionMessage(job);
+  await notifyWithEmail({
     user: crew._id,
     job: job._id,
-    message: `You have been preselected for ${job.position} work in ${job.location.city} from ${dateKey(job.startDate)} to ${dateKey(job.endDate)}. The hiring party can view your CV and use your approved contact methods.`,
+    kind: "preselection",
+    message,
+    subject: "You have been preselected for daywork",
+    html: `<p>${escapeHtml(message)}</p>`,
   });
-  res
-    .status(201)
-    .json({
-      message:
-        "Crew selected. Contact access is available while this job is open.",
-    });
+
+  res.status(201).json({
+    message:
+      "Crew selected. Contact access is available while this job is open.",
+  });
 });
 export const getContacts = endpoint(async (req, res) => {
   const job = await owned(req);

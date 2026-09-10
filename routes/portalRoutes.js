@@ -1,3 +1,4 @@
+import { approvalMode } from "../services/employerApproval.js";
 import express from "express";
 import rateLimit from "express-rate-limit";
 import Notification from "../models/Notification.js";
@@ -8,8 +9,15 @@ import { endpoint, fail, escapeHtml } from "../services/http.js";
 import { POSITIONS, TAGS } from "../services/matching.js";
 import { sendEmail } from "../controllers/authController.js";
 const router = express.Router();
-router.get("/options", (req, res) =>
-  res.json({ positions: POSITIONS, tags: TAGS }),
+router.get(
+  "/options",
+  endpoint(async (req, res) => {
+    res.json({
+      positions: POSITIONS,
+      tags: TAGS,
+      employerApprovalMode: await approvalMode(),
+    });
+  }),
 );
 router.use(protect);
 router.get(
@@ -77,12 +85,10 @@ router.post(
     } catch {
       /* Retained for staff to review or retry; never lose the report. */
     }
-    res
-      .status(201)
-      .json({
-        message: "Your report has been recorded.",
-        reference: issue._id,
-      });
+    res.status(201).json({
+      message: "Your report has been recorded.",
+      reference: issue._id,
+    });
   }),
 );
 export default router;

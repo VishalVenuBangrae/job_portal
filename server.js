@@ -1,18 +1,19 @@
+import adminRoutes from "./routes/adminRoutes.js";
 // imports packages
-import express from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import morgan from 'morgan';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import connectDB from './config/db.js';
-import authRoutes from './routes/authRoutes.js';
-import jobRoutes from './routes/jobRoutes.js';
-import locationRoutes from './routes/locationRoutes.js';
-import portalRoutes from './routes/portalRoutes.js';
-import mongoSanitize from 'express-mongo-sanitize';
-import profileRoutes from './routes/profileRoutes.js';
-import multer from 'multer';
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import morgan from "morgan";
+import path from "path";
+import { fileURLToPath } from "url";
+import connectDB from "./config/db.js";
+import authRoutes from "./routes/authRoutes.js";
+import jobRoutes from "./routes/jobRoutes.js";
+import locationRoutes from "./routes/locationRoutes.js";
+import portalRoutes from "./routes/portalRoutes.js";
+import mongoSanitize from "express-mongo-sanitize";
+import profileRoutes from "./routes/profileRoutes.js";
+import multer from "multer";
 import {
   createRateLimiters,
   helmetConfig,
@@ -21,9 +22,9 @@ import {
   validateInput,
   fileUploadSecurity,
   securityErrorHandler,
-  securityLogger
-} from './config/security.js';
-import { startProfileInactivityScheduler } from './services/profileInactivityService.js';
+  securityLogger,
+} from "./config/security.js";
+import { startProfileInactivityScheduler } from "./services/profileInactivityService.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,13 +38,17 @@ const PORT = process.env.PORT || 8080;
 app.use(helmetConfig);
 
 // Rate limiting
-const { general: generalLimiter, auth: authLimiter, emailVerification: emailVerificationLimiter } = createRateLimiters();
-app.use('/api/', generalLimiter);
-app.use('/api/v1/auth/', authLimiter);
+const {
+  general: generalLimiter,
+  auth: authLimiter,
+  emailVerification: emailVerificationLimiter,
+} = createRateLimiters();
+app.use("/api/", generalLimiter);
+app.use("/api/v1/auth/", authLimiter);
 
 // More lenient rate limiting for email verification
-app.use('/api/v1/auth/verify-email', emailVerificationLimiter);
-app.use('/api/v1/auth/resend-verification', emailVerificationLimiter);
+app.use("/api/v1/auth/verify-email", emailVerificationLimiter);
+app.use("/api/v1/auth/resend-verification", emailVerificationLimiter);
 
 // CORS configuration
 app.use(cors(corsConfig));
@@ -51,61 +56,65 @@ app.use(cors(corsConfig));
 // Security headers
 app.use(securityHeaders);
 
-
-
 // Security logging
 app.use(securityLogger);
 
 // Body parser with limits
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(mongoSanitize());
 app.use(validateInput);
-app.use('/api', (req,res,next)=>{res.set('Cache-Control','no-store');next();});
+app.use("/api", (req, res, next) => {
+  res.set("Cache-Control", "no-store");
+  next();
+});
 
 // Logging middleware (production-safe)
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('combined'));
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("combined"));
 } else {
-  app.use(morgan('combined', {
-    skip: (req, res) => res.statusCode < 400,
-    stream: {
-      write: (message) => {
-        // Log to file in production instead of console
-        console.log(message.trim());
-      }
-    }
-  }));
+  app.use(
+    morgan("combined", {
+      skip: (req, res) => res.statusCode < 400,
+      stream: {
+        write: (message) => {
+          // Log to file in production instead of console
+          console.log(message.trim());
+        },
+      },
+    }),
+  );
 }
 
 // Static files
-app.use(express.static(path.join(__dirname,'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
 // Multer configuration for file uploads
 const storage = multer.memoryStorage();
 const upload = multer({
   storage: storage,
   limits: fileUploadSecurity.limits,
-  fileFilter: fileUploadSecurity.fileFilter
+  fileFilter: fileUploadSecurity.fileFilter,
 });
 
 // Make upload available to routes
 app.locals.upload = upload;
 
 // API Routes
-app.use('/api/v1/portal', portalRoutes);
-app.get('/api/health',(req,res)=>res.json({status:'ok'}));
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/jobs', jobRoutes);
-app.use('/api/v1/locations', locationRoutes);
-app.use('/api/v1/profile', profileRoutes);
+app.use("/api/v1/portal", portalRoutes);
+app.use("/api/v1/admin", adminRoutes);
+app.get("/api/health", (req, res) => res.json({ status: "ok" }));
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/jobs", jobRoutes);
+app.use("/api/v1/locations", locationRoutes);
+app.use("/api/v1/profile", profileRoutes);
 
 // Error handling middleware
 app.use(securityErrorHandler);
 
 // 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+app.use("*", (req, res) => {
+  res.status(404).json({ message: "Route not found" });
 });
 
 // Connect to database and start server
@@ -114,13 +123,16 @@ const startServer = async () => {
     await connectDB();
     startProfileInactivityScheduler();
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
+      console.log(
+        `🚀 Server running on port ${PORT} in ${process.env.NODE_ENV || "development"} mode`,
+      );
     });
   } catch (error) {
-    console.error('Failed to start server:', error.message);
+    console.error("Failed to start server:", error.message);
     process.exit(1);
   }
 };
 
 export { app };
-if (process.argv[1] && path.resolve(process.argv[1]) === __filename) startServer();
+if (process.argv[1] && path.resolve(process.argv[1]) === __filename)
+  startServer();
