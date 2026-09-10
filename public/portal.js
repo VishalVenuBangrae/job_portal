@@ -286,7 +286,7 @@ function jobCard(j, employer = false) {
     .map((t) => `<span class="tag">${esc(t)}</span>`)
     .join(
       "",
-    )}</div><div class="job-bottom"><strong>${esc(j.salary)}</strong>${employer ? `<a class="btn" href="/matches.html?job=${j._id}">View crew ${icon("arrow")}</a>` : `<button class="btn" data-job="${j._id}">View opportunity ${icon("arrow")}</button>`}</div></article>`;
+    )}</div><div class="job-bottom"><strong>${esc(j.salary)}</strong>${employer ? `<div class="actions"><a class="btn" href="/post-job.html?edit=${j._id}">Edit job</a><a class="btn primary" href="/matches.html?job=${j._id}">View crew ${icon("arrow")}</a></div>` : `<button class="btn" data-job="${j._id}">View opportunity ${icon("arrow")}</button>`}</div></article>`;
 }
 async function dashboard() {
   const employer = me.userType === "employer";
@@ -433,7 +433,7 @@ async function manage() {
       (!me.vessel?.name
         ? '<div class="alert">Complete your vessel identity in <a href="/change-password.html">Account settings</a> before posting.</div>'
         : "") +
-      `<div class="grid">${jobs.length ? jobs.map((j) => `<div>${jobCard(j, true)}<div class="actions" style="padding:12px 0 24px"><span class="small">${j.applications?.length || 0} applications · ${j.contacts?.length || 0} contacts</span>${!j.applications?.length && !j.contacts?.length ? `<a class="small" href="/post-job.html?edit=${j._id}">Edit job</a>` : ""}<select aria-label="Status for ${esc(j.title)}" data-status="${j._id}" style="width:auto;margin-left:auto">${["active", "closed", "filled", "cancelled"].map((s) => `<option ${s === j.status ? "selected" : ""}>${s}</option>`).join("")}</select></div></div>`).join("") : empty("No jobs posted yet", "Tell us the position, port and dates you need.", "/post-job.html", "Post a job")}</div>`,
+      `<div class="grid">${jobs.length ? jobs.map((j) => `<div>${jobCard(j, true)}<div class="actions" style="padding:12px 0 24px"><span class="small">${j.applications?.length || 0} applications · ${j.contacts?.length || 0} contacts</span><select aria-label="Status for ${esc(j.title)}" data-status="${j._id}" style="width:auto;margin-left:auto">${["active", "closed", "filled", "cancelled"].map((s) => `<option ${s === j.status ? "selected" : ""}>${s}</option>`).join("")}</select></div></div>`).join("") : empty("No jobs posted yet", "Tell us the position, port and dates you need.", "/post-job.html", "Post a job")}</div>`,
   );
   $$("[data-status]").forEach(
     (s) =>
@@ -456,10 +456,14 @@ async function manage() {
   );
 }
 async function postJob() {
+  const edit = new URLSearchParams(location.search).get("edit");
   shell(
     heading(
-      "Let’s find your next crew.",
-      "A detailed brief helps us find people with the right skills and availability.",
+      edit ? "Edit your job." : "Let’s find your next crew.",
+      edit
+        ? "Update the brief and save your changes."
+        : "A detailed brief helps us find people with the right skills and availability.",
+      edit ? '<a class="btn" href="/manage-jobs.html">Back to jobs</a>' : "",
     ) +
       `<form id="post-form"><section class="panel"><h2><span class="section-number">01</span>The opportunity</h2><div class="form-grid">${field("title", "Job title *", "text", "", 'required maxlength="120" placeholder="e.g. Deckhand for a three-day turnaround"')}${select("position", "Position *", options.positions, "", "required")}${select("jobType", "Work type *", ["Daywork", "Freelance", "Delivery"], "Daywork", "required")}${select("department", "Department *", Object.keys(options.tags), "", "required")}${field("startDate", "Start date *", "date", "", 'required min="' + new Date().toISOString().slice(0, 10) + '"')}${field("endDate", "End date *", "date", "", "required")}${field("crewNeeded", "Number of crew *", "number", "1", 'required min="1" max="100"')}${field("salary", "Rate & currency *", "text", "", 'required placeholder="e.g. USD 180 / day, or DOE"')}<div class="full"><label for="description">Job description *</label><textarea id="description" name="description" required maxlength="10000" placeholder="Duties, hours, experience and anything the crew should know. Keep vessel-identifying details out of this description."></textarea></div></div></section><section class="panel"><h2><span class="section-number">02</span>Location & requirements</h2><div class="form-grid">${field("country", "Country *", "text", "", 'required placeholder="e.g. United States"')}${field("city", "City *", "text", "", 'required placeholder="e.g. Fort Lauderdale"')}${field("port", "Port / marina *", "text", "", "required")}${select("vesselFlag", "Vessel flag *", ["US flagged", "Foreign Flagged"], "", "required")}<div class="full" id="job-tags"></div><div class="full">${checks("requiredCertificates", "Mandatory certificates", ["stcw", "eng1"], ["stcw", "eng1"])}</div></div></section><div class="alert" id="limit-note">For 1 crew member, you can select up to 5 contacts. Contact access is limited to this job.</div><div class="form-footer"><small>Vessel name and call sign remain private. Don’t include them in the public description.</small><button type="submit" class="primary">Post job & find crew ${icon("arrow")}</button></div></form>`,
   );
@@ -478,7 +482,6 @@ async function postJob() {
   };
   $("#startDate").onchange = () => ($("#endDate").min = $("#startDate").value);
   locationHints("country", "city", "port");
-  const edit = new URLSearchParams(location.search).get("edit");
   if (edit) {
     const existing = (await api("/jobs/posted")).find((j) => j._id === edit);
     if (!existing) throw new Error("Job not found");
@@ -504,7 +507,20 @@ async function postJob() {
     $$("input[name=requiredCertificates]").forEach(
       (x) => (x.checked = existing.requiredCertificates.includes(x.value)),
     );
-    $("#post-form button[type=submit]").textContent = "Save job";
+    $("#startDate").min = String(existing.startDate || "").slice(0, 10);
+    $("#startDate").onchange();
+    $("#crewNeeded").oninput();
+    $("#post-form button[type=submit]").textContent = "Save changes";
+    if (existing.applications?.length || existing.contacts?.length) {
+      $("#post-form").insertAdjacentHTML(
+        "beforebegin",
+        '<div class="alert" role="status"><strong>Job requirements are locked after crew activity.</strong><p>This job has applications or selected crew. You can still change its status in My jobs &amp; matches. For different requirements, close this job and post a new one.</p><div class="actions"><a class="btn" href="/manage-jobs.html">Manage job status</a><a class="btn primary" href="/post-job.html">Post a new job</a></div></div>',
+      );
+      $$(
+        "#post-form input, #post-form select, #post-form textarea, #post-form button",
+      ).forEach((el) => (el.disabled = true));
+      $("#post-form button[type=submit]").textContent = "Editing locked";
+    }
   }
 
   bindForm("#post-form", async (f) => {
@@ -528,7 +544,9 @@ async function postJob() {
       method: edit ? "PUT" : "POST",
       body: b,
     });
-    location.href = "/matches.html?job=" + j._id;
+    location.href = edit
+      ? "/manage-jobs.html?updated=" + j._id
+      : "/matches.html?job=" + j._id;
   });
 }
 async function matches() {
@@ -548,7 +566,7 @@ async function matches() {
     heading(
       "Find the right people.",
       `${esc(j.title)} · ${esc(j.location.city)} · ${range(j)}`,
-      `<a class="btn" href="/manage-jobs.html">Back to jobs</a>`,
+      `<div class="actions"><a class="btn" href="/post-job.html?edit=${j._id}">Edit job</a><a class="btn" href="/manage-jobs.html">Back to jobs</a></div>`,
     ) +
       `<div class="banner"><div><div class="eyebrow">Job-specific contact access</div><h2>${data.closed ? "This job is closed" : `${data.unlocked.length} of ${data.contactLimit} contacts selected`}</h2><p>${data.closed ? "Only names remain in your contact history. CV and contact access has ended." : data.contactLimit ? "Review profile summaries below. Select Contact Crew to view a CV and approved contact methods." : "This job needs more than five crew. Contact NCA to arrange access."}</p></div>${!data.contactLimit && !data.closed ? '<a class="btn" href="/report-issue.html">Contact NCA</a>' : ""}</div><section class="panel"><h2>Your contact list</h2><div id="contacts">${contacts.length ? contacts.map((c) => `<div class="list-row"><div><h3>${esc(c.name)}</h3>${c.closed ? '<span class="small">Contact access closed</span>' : `<div class="actions">${c.email ? `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>` : ""}${c.phone ? `<a href="tel:${esc(c.phone)}">${esc(c.phone)}</a>` : ""}${c.whatsapp ? `<a href="https://wa.me/${esc(c.whatsapp.replace(/\D/g, ""))}" target="_blank" rel="noopener">WhatsApp</a>` : ""}${(c.documents || []).map((t) => `<button class="quiet small" data-document="/jobs/${id}/contacts/${c._id}/documents/${t}">${esc(t.toUpperCase())} ↓</button>`).join("")}</div>`}</div>${select("outcome-" + c._id, "Hiring outcome", ["Yes", "No", "Waiting for a response", "Crew was unavailable", "Job was cancelled"], c.employerOutcome || "", 'data-outcome="' + c._id + '"')}</div>`).join("") : '<p class="small">Crew you select will appear here.</p>'}</div></section><div class="panel-heading"><h2>${data.crew.length} matched crew</h2><span class="small">Ranked by profile fit</span></div><div class="grid">${data.crew.length ? data.crew.map((c) => `<article class="job-card crew-card"><div class="crew-header">${c.hasPhoto ? `<img class="crew-photo" data-photo="/jobs/${id}/matches/${c._id}/photo" alt="${esc(c.name)}">` : `<div class="avatar crew-photo">${esc(c.name[0])}</div>`}<div><h3>${esc(c.name)}</h3><p>${esc(c.primaryPosition)}</p></div><span class="badge good" style="margin-left:auto">${c.score} fit</span></div><div class="meta"><p>${esc(c.location?.city)}, ${esc(c.location?.country)}</p><p>${esc((c.experience || []).join(", "))} · ${esc(c.yachtSize)}</p><p>${esc(c.dayRate)}</p></div><div>${c.keywords.map((t) => `<span class="tag">${esc(t)}</span>`).join("")}</div><p class="small">${c.reasons.map(esc).join(" · ")}</p><p class="small">Certificates uploaded: ${c.certificates.map(esc).join(", ") || "None"}<br>Availability confirmed ${date(c.profileLastActive)}</p><div class="job-bottom"><span class="small">CV & contact details protected</span><button data-unlock="${c._id}" class="primary" ${data.unlocked.includes(c._id) || data.unlocked.length >= data.contactLimit ? "disabled" : ""}>${data.unlocked.includes(c._id) ? "Selected" : "Contact crew"}</button></div></article>`).join("") : empty(data.closed ? "Matching is closed" : "No eligible crew yet", data.closed ? "Post a new job for your next requirement." : "Crew must meet the position, location, dates and work requirements. Check again as profiles are updated.")}</div>`,
   );
